@@ -1,0 +1,172 @@
+<USER_REQUEST>
+IMPLEMENT THE ABOUT SECTION UI FROM THE PROVIDED FIGMA DESIGN
+
+FIGMA SOURCE OF TRUTH:
+
+https://www.figma.com/design/HgSCx2CAWDxpvmiLc82PrT/Untitled?node-id=0-1&p=f&t=mBot9TDIHcjDZjBi-0
+
+IMPORTANT:
+You must inspect the actual Figma file/design before implementing anything.
+
+The Figma About UI is the SINGLE SOURCE OF TRUTH for the visual design.
+
+Do NOT recreate the design from assumptions or from previous prompts.
+
+==================================================
+1. FIGMA INSPECTION
+==================================================
+
+Open the provided Figma file using the already configured Figma access.
+
+Inspect the About section carefully.
+
+Extract and reproduce:
+
+- exact layout
+- element positions
+- typography
+- font family
+- font weight
+- font size
+- line height
+- letter spacing
+- colors
+- opacity
+- borders
+- border radius
+- spacing
+- button dimensions
+- decorative elements
+- content hierarchy
+- alignment
+- responsive structure.
+
+If the Figma file contains separate Desktop and Mobile About designs, inspect BOTH.
+
+Do not assume Desktop and Mobile are simply scaled versions of each other.
+
+==================================================
+2. IMPLEMENT ONLY ABOUT UI
+==================================================
+
+Replace the current About section CONTENT UI with the Figma design.
+
+Do NOT redesign it.
+
+Do NOT "improve" the design.
+
+Do NOT add additional UI elements.
+
+Do NOT remove elements that exist in Figma.
+
+The goal is:
+
+FIGMA
+→
+React implementation
+
+as accurately as possible.
+
+==================================================
+3. KEEP CINEMATIC BACKGROUND SEPARATE
+==================================================
+
+The About cinematic background is already implemented.
+
+Keep the existing two-image About sequence:
+
+02_about_wellness_reveal.webp
+→
+05_about_treatment_doorway.webp
+
+Do NOT change these images.
+
+Do NOT create new background images.
+
+Do NOT place the Figma UI inside a new background image.
+
+<truncated 5445 bytes>
+======================
+13. VISUAL QUALITY
+==================================================
+
+The implementation must match Figma closely.
+
+Pay special attention to:
+
+- exact spacing
+- typography
+- text wrapping
+- element alignment
+- button size
+- whitespace
+- content scale
+- horizontal positioning
+- visual hierarchy.
+
+Do NOT make the UI larger than Figma.
+
+Do NOT add unnecessary UI.
+
+Do NOT add generic cards.
+
+Do NOT add generic gradients.
+
+Do NOT add glassmorphism.
+
+Do NOT change the Figma visual language.
+
+==================================================
+14. VERIFICATION
+==================================================
+
+After implementation inspect the website at:
+
+Desktop:
+1280 × 1024
+1440 × 900
+
+Mobile:
+390 × 844
+375 × 667
+
+Verify:
+
+✓ About UI matches Figma.
+✓ Desktop matches Desktop Figma.
+✓ Mobile matches Mobile Figma.
+✓ About starts correctly.
+✓ State 01 appears correctly.
+✓ State 01 moves RIGHT during scroll.
+✓ State 02 enters LEFT → RIGHT.
+✓ About 02 → About 05 cinematic progression remains smooth.
+✓ No old About images appear.
+✓ Reverse scroll works.
+✓ About → Therapy remains intact.
+✓ No layout jumps.
+✓ No flicker.
+✓ No unwanted zoom/fit correction.
+
+Finally run:
+
+npm.cmd run lint
+npm.cmd run build
+
+Do not make unrelated changes.
+
+IMPORTANT:
+Do not stop after creating an approximate version.
+
+Actually inspect the Figma design and implement the complete UI shown there.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-10T16:42:37+05:30.
+
+The user's current state is as follows:
+Active Document: d:\DMC-fkode\src\components\cinematic\SectionTransition.jsx (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 1
+Other open documents:
+- d:\DMC-fkode\src\components\cinematic\CinematicJourney.jsx (LANGUAGE_JAVASCRIPT)
+- d:\DMC-fkode\src\components\cinematic\SectionTransition.jsx (LANGUAGE_JAVASCRIPT)
+- d:\DMC-fkode\src\sections\Footer\Footer.jsx (LANGUAGE_JAVASCRIPT)
+</ADDITIONAL_METADATA>

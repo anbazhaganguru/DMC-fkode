@@ -1,0 +1,36 @@
+:root {
+  /* Color system tokens */
+  --color-background: #0f1416;
+  --color-surface: #182024;
+  --color-text-primary: #f0f4f5;
+  --color-text-secondary: #9aa8ad;
+  --color-accent: #38a3a5;
+  --color-border: rgba(255, 255, 255, 0.1);
+
+  /* Exact Figma DWC Design Tokens */
+  --color-dwc-dark: #1e2522;
+  --color-dwc-muted: #55605a;
+  --color-dwc-sage: #7aafa2;
+  --color-dwc-blue: #8ab4cd;
+  --color-dwc-blush: #e2cecb;
+  --color-dwc-cream: #fdfcfa;
+  --color-dwc-border: rgba(30, 37, 34, 0.15);
+  --color-dwc-border-strong: rgba(30, 37, 34, 0.20);
+  --color-dwc-border-subtle: rgba(30, 37, 34, 0.08);
+
+  /* Typography tokens */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-primary: var(--font-sans);
+  --font-heading: var(--font-serif);
+
+  /* Layout tokens */
+  --max-content-width: 1280px;
+  --header-height: 89px;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: 4rem;
+}
+
