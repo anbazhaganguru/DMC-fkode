@@ -31,13 +31,6 @@ export const SectionTransition = ({
   const incomingImgRef = useRef(null);
   const overlayVignetteRef = useRef(null);
   const overlayToneRef = useRef(null);
-  const chapterLoaderRef = useRef(null);
-  const chapterTitleRef = useRef(null);
-  const chapterRuleTopRef = useRef(null);
-  const chapterRuleBottomRef = useRef(null);
-  const chapterAxisTopRef = useRef(null);
-  const chapterAxisBottomRef = useRef(null);
-  const chapterSubRef = useRef(null);
 
   const {
     id,
@@ -58,7 +51,6 @@ export const SectionTransition = ({
     const incoming = incomingImgRef.current;
     const vignette = overlayVignetteRef.current;
     const tone = overlayToneRef.current;
-    const chapterLoader = chapterLoaderRef.current;
 
     if (!container || !outgoing || !incoming) return;
 
@@ -96,77 +88,6 @@ export const SectionTransition = ({
         if (tone) {
           const toneOpacity = Math.sin(p * Math.PI) * 0.35;
           tone.style.opacity = toneOpacity.toFixed(3);
-        }
-
-        // Editorial Luxury Chapter Loader Animation (Centered Architectural "01 / ABOUT")
-        if (chapterLoader) {
-          let loaderOp = 0;
-          let translateY = 12;
-          let ruleScaleX = 0;
-          let axisScaleY = 0;
-          let titleOp = 0;
-          let titleY = 10;
-          let subOp = 0;
-
-          if (p >= 0.00 && p <= 0.35) {
-            loaderOp = Math.min(1.0, p / 0.16);
-            translateY = 12 * (1 - Math.min(1.0, p / 0.20));
-            
-            axisScaleY = Math.min(1.0, p / 0.18);
-            ruleScaleX = Math.min(1.0, Math.max(0, p / 0.22));
-            titleOp = Math.min(1.0, Math.max(0, p / 0.20));
-            titleY = 10 * (1 - Math.min(1.0, Math.max(0, p / 0.20)));
-            subOp = Math.min(1.0, Math.max(0, (p - 0.04) / 0.22));
-          } else if (p > 0.35 && p < 0.55) {
-            loaderOp = 1.0;
-            translateY = 0;
-            axisScaleY = 1.0;
-            ruleScaleX = 1.0;
-            titleOp = 1.0;
-            titleY = 0;
-            subOp = 1.0;
-          } else if (p >= 0.55 && p <= 0.85) {
-            const t = (p - 0.55) / 0.30;
-            const fade = 1.0 - smoothstep(0, 0.85, t);
-            loaderOp = fade;
-            translateY = -12 * smoothstep(0, 1, t);
-            axisScaleY = fade;
-            ruleScaleX = fade;
-            titleOp = fade;
-            titleY = -8 * smoothstep(0, 1, t);
-            subOp = fade;
-          } else {
-            loaderOp = 0;
-            translateY = 12;
-            ruleScaleX = 0;
-            axisScaleY = 0;
-            titleOp = 0;
-            titleY = 10;
-            subOp = 0;
-          }
-
-          chapterLoader.style.opacity = loaderOp.toFixed(3);
-          chapterLoader.style.transform = `translate(-50%, calc(-50% + ${translateY.toFixed(1)}px))`;
-
-          if (chapterTitleRef.current) {
-            chapterTitleRef.current.style.opacity = titleOp.toFixed(3);
-            chapterTitleRef.current.style.transform = `translateY(${titleY.toFixed(1)}px)`;
-          }
-          if (chapterRuleTopRef.current) {
-            chapterRuleTopRef.current.style.transform = `scaleX(${ruleScaleX.toFixed(3)})`;
-          }
-          if (chapterRuleBottomRef.current) {
-            chapterRuleBottomRef.current.style.transform = `scaleX(${ruleScaleX.toFixed(3)})`;
-          }
-          if (chapterAxisTopRef.current) {
-            chapterAxisTopRef.current.style.transform = `scaleY(${axisScaleY.toFixed(3)})`;
-          }
-          if (chapterAxisBottomRef.current) {
-            chapterAxisBottomRef.current.style.transform = `scaleY(${axisScaleY.toFixed(3)})`;
-          }
-          if (chapterSubRef.current) {
-            chapterSubRef.current.style.opacity = subOp.toFixed(3);
-          }
         }
         break;
       }
@@ -290,32 +211,6 @@ export const SectionTransition = ({
         ref={overlayToneRef}
         className={`section-transition__overlay section-transition__overlay--tone section-transition__tone--${type}`}
       />
-
-      {/* Luxury Editorial Chapter Title Card (Home -> About Transition) */}
-      {type === 'notepad' && (
-        <div
-          ref={chapterLoaderRef}
-          className="section-transition__chapter-loader"
-          aria-hidden="true"
-        >
-          <div className="chapter-loader__content">
-            <span className="chapter-loader__number">01</span>
-            <div className="chapter-loader__axis-top" ref={chapterAxisTopRef} />
-            <div className="chapter-loader__rule chapter-loader__rule--top" ref={chapterRuleTopRef} />
-            
-            <h2 className="chapter-loader__title" ref={chapterTitleRef}>
-              ABOUT
-            </h2>
-
-            <div className="chapter-loader__rule chapter-loader__rule--bottom" ref={chapterRuleBottomRef} />
-            <div className="chapter-loader__axis-bottom" ref={chapterAxisBottomRef} />
-            
-            <span className="chapter-loader__subtitle" ref={chapterSubRef}>
-              A PERSONALIZED WELLNESS JOURNEY
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

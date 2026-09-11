@@ -12,17 +12,19 @@
  * Supports responsive layouts with separate desktop and mobile assets.
  */
 
-// Desktop Home Sequence (4 frames)
+// Desktop Home Sequence (5 frames)
 import homeDesktop01 from '../assets/images/desktop/home/01_home_clinic_wide.webp';
 import homeDesktop02 from '../assets/images/desktop/home/02_home_clinic_approach.webp';
 import homeDesktop03 from '../assets/images/desktop/home/03_home_table_approach.webp';
 import homeDesktop04 from '../assets/images/desktop/home/04_home_notepad_reveal.webp';
+import homeDesktop05 from '../assets/images/desktop/home/05_home_notepad_closeup.webp';
 
-// Mobile Home Sequence (4 frames)
+// Mobile Home Sequence (5 frames)
 import homeMobile01 from '../assets/images/mobile/home/01_home_clinic_wide.webp';
 import homeMobile02 from '../assets/images/mobile/home/02_home_clinic_approach.webp';
 import homeMobile03 from '../assets/images/mobile/home/03_home_table_approach.webp';
 import homeMobile04 from '../assets/images/mobile/home/04_home_notepad_reveal.webp';
+import homeMobile05 from '../assets/images/mobile/home/05_home_notepad_closeup.webp';
 
 // Desktop About Sequence (2 frames)
 import aboutDesktop02 from '../assets/images/desktop/about/02_about_wellness_reveal.webp';
@@ -74,13 +76,15 @@ export const cinematicImages = {
       homeDesktop01,
       homeDesktop02,
       homeDesktop03,
-      homeDesktop04
+      homeDesktop04,
+      homeDesktop05
     ],
     mobile: [
       homeMobile01,
       homeMobile02,
       homeMobile03,
-      homeMobile04
+      homeMobile04,
+      homeMobile05
     ]
   },
   about: {
