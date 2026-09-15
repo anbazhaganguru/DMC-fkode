@@ -71,7 +71,7 @@ function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale
   ctx.drawImage(img, offsetX, offsetY, renderWidth, renderHeight);
 }
 
-function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth, canvasHeight, isHome = false) {
+function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth, canvasHeight, section = 'home') {
   const total = activeFrames.length;
   if (total === 0) return;
 
@@ -87,23 +87,21 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  // ONE continuous camera movement across the entire Home cinematic timeline
-  // No local per-frame reset, no zoom-out between frames.
-  // Scale moves monotonically forward driven by overall Home progress:
-  // progress 0.00 -> scale 1.00 (Frame 1)
-  // progress 0.25 -> scale ~1.015 (Frame 2)
-  // progress 0.50 -> scale ~1.030 (Frame 3)
-  // progress 0.75 -> scale ~1.045 (Frame 4)
-  // progress 1.00 -> scale ~1.060 (Frame 5)
+  // Continuous camera movement driven by section progress
   let cameraScale = 1.0;
   let originX = 0.5;
   let originY = 0.5;
 
-  if (isHome) {
+  if (section === 'home') {
     const overallProgress = maxIndex > 0 ? clampedVirtual / maxIndex : 0;
     cameraScale = 1.0 + (overallProgress * 0.06);
     originX = 0.50 + (overallProgress * 0.035);
     originY = 0.50 + (overallProgress * 0.025);
+  } else if (section === 'about') {
+    const overallProgress = maxIndex > 0 ? clampedVirtual / maxIndex : 0;
+    cameraScale = 1.0 + (overallProgress * 0.05);
+    originX = 0.50 + (overallProgress * 0.020);
+    originY = 0.50 + (overallProgress * 0.015);
   }
 
   if (baseIndex === nextIndex || !nextImg || !nextImg.complete) {
@@ -170,14 +168,14 @@ function renderHomeToAboutTransition(ctx, homeImgUrl, aboutImgUrl, progress, can
   const aboutOriginX = 0.5;
   const aboutOriginY = 0.5;
 
-  // Smooth emergence matching the paper-bridge lighting curve
+  // Smooth emergence after chapter loader holds and fades (starts p > 0.50)
   let aboutAlpha = 0;
-  if (p <= 0.08) {
+  if (p <= 0.50) {
     aboutAlpha = 0;
-  } else if (p >= 0.78) {
+  } else if (p >= 0.95) {
     aboutAlpha = 1.0;
   } else {
-    const t = (p - 0.08) / 0.70;
+    const t = (p - 0.50) / 0.45;
     aboutAlpha = t * t * (3 - 2 * t);
   }
 
@@ -281,7 +279,7 @@ export const CinematicJourney = ({ children }) => {
 
       const { width, height } = canvasDimsRef.current;
       if (width > 0 && height > 0) {
-        drawInterpolatedFrames(ctx, activeFrames, virtualProgress, width, height, section === 'home');
+        drawInterpolatedFrames(ctx, activeFrames, virtualProgress, width, height, section);
       }
     };
 
@@ -361,11 +359,11 @@ export const CinematicJourney = ({ children }) => {
               overlayEls.forEach((el) => {
                 const sec = el.getAttribute('data-section');
                 if (sec === activePhase.section) {
-                  // Fade out overlay near end of section sequence (last 18%)
-                  const fadeOut = phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0;
+                  // Fade out overlay near end of section sequence (except About, which stays solid for cumulative hold)
+                  const fadeOut = (sec === 'about' || phaseProgress <= 0.82) ? 1.0 : (1 - phaseProgress) / 0.18;
                   // Fade in overlay at start of section sequence (first 15%)
-                  // Home section is already visible from initial load/scroll 0
-                  const fadeIn = (sec === 'home' || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
+                  // Home and About sections are already visible from initial load or prior transition bridge
+                  const fadeIn = (sec === 'home' || sec === 'about' || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
                   const op = Math.max(0, Math.min(1, Math.min(fadeIn, fadeOut)));
                   el.style.opacity = op.toFixed(2);
                   el.style.visibility = op > 0 ? 'visible' : 'hidden';
@@ -407,7 +405,7 @@ export const CinematicJourney = ({ children }) => {
               if (width > 0 && height > 0 && homeFrames.length && aboutFrames.length) {
                 renderHomeToAboutTransition(
                   ctx,
-                  homeFrames[homeFrames.length - 1],
+                  homeFrames[homeFrames.length - 1], // Photo 4 (final frame of 4-photo sequence)
                   aboutFrames[0],
                   bridgeProgress,
                   width,
@@ -424,13 +422,46 @@ export const CinematicJourney = ({ children }) => {
               };
             });
 
-            // Hide all section overlays during active bridge
+            // Hide irrelevant section overlays during active bridge, but fade in incoming About overlay after chapter loader completes
             if (overlaysContainer) {
               const overlayEls = overlaysContainer.querySelectorAll('.cinematic-section-overlay');
               overlayEls.forEach((el) => {
-                el.style.opacity = '0';
-                el.style.visibility = 'hidden';
-                el.style.pointerEvents = 'none';
+                const sec = el.getAttribute('data-section');
+                if (tKey === 'homeToAbout' && sec === 'about') {
+                  const aboutOp = bridgeProgress > 0.60 ? Math.min(1, (bridgeProgress - 0.60) / 0.35) : 0;
+                  el.style.opacity = aboutOp.toFixed(2);
+                  el.style.visibility = aboutOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = aboutOp > 0.5 ? 'auto' : 'none';
+                } else if (tKey === 'aboutToTherapy' && sec === 'about') {
+                  const aboutOp = Math.max(0, 1 - bridgeProgress);
+                  el.style.opacity = aboutOp.toFixed(2);
+                  el.style.visibility = aboutOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = aboutOp > 0.5 ? 'auto' : 'none';
+                } else if (tKey === 'aboutToTherapy' && sec === 'therapy') {
+                  const therapyOp = bridgeProgress > 0.40 ? Math.min(1, (bridgeProgress - 0.40) / 0.60) : 0;
+                  el.style.opacity = therapyOp.toFixed(2);
+                  el.style.visibility = therapyOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = therapyOp > 0.5 ? 'auto' : 'none';
+                } else if (tKey === 'therapyToRecovery' && sec === 'therapy') {
+                  const therapyOp = Math.max(0, 1 - bridgeProgress);
+                  el.style.opacity = therapyOp.toFixed(2);
+                  el.style.visibility = therapyOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = therapyOp > 0.5 ? 'auto' : 'none';
+                } else if (tKey === 'therapyToRecovery' && sec === 'recovery') {
+                  const recoveryOp = bridgeProgress > 0.40 ? Math.min(1, (bridgeProgress - 0.40) / 0.60) : 0;
+                  el.style.opacity = recoveryOp.toFixed(2);
+                  el.style.visibility = recoveryOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = recoveryOp > 0.5 ? 'auto' : 'none';
+                } else if (tKey === 'recoveryToCTA' && sec === 'recovery') {
+                  const recoveryOp = Math.max(0, 1 - bridgeProgress);
+                  el.style.opacity = recoveryOp.toFixed(2);
+                  el.style.visibility = recoveryOp > 0 ? 'visible' : 'hidden';
+                  el.style.pointerEvents = recoveryOp > 0.5 ? 'auto' : 'none';
+                } else {
+                  el.style.opacity = '0';
+                  el.style.visibility = 'hidden';
+                  el.style.pointerEvents = 'none';
+                }
               });
 
               const aboutEl = overlaysContainer.querySelector('#about');

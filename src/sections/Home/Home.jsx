@@ -11,81 +11,107 @@ export const Home = () => {
         <div className="hero-atmosphere__mobile-bottom" />
       </div>
 
-      {/* Main Hero Content Area */}
+      {/* Main Hero Content Area - Three Independent Layout Blocks */}
       <div className="hero-container">
-        <div className="hero-content">
-          {/* Eyebrow Tag */}
-          <div className="hero-eyebrow">
-            <span className="hero-eyebrow__dot" />
-            <span className="hero-eyebrow__text">DANIEL WELLNESS CENTER</span>
+        {/* Zone 2: Main Hero Content Group (Eyebrow, Headline, Description, CTAs) */}
+        <div className="hero-main-group">
+          {/* BLOCK 01: Eyebrow Tag Group */}
+          <div className="hero-block hero-block--eyebrow">
+            <div className="hero-eyebrow">
+              <span className="hero-eyebrow__dot" />
+              <span className="hero-eyebrow__text hero-eyebrow__text--desktop">DANIEL WELLNESS CENTER</span>
+              <span className="hero-eyebrow__text hero-eyebrow__text--mobile">01 / WELLNESS</span>
+            </div>
           </div>
 
-          {/* Heading 1: Large Dominant Headline */}
-          <h1 className="hero-headline">
-            <span className="hero-headline__line hero-headline__line--roman">
-              Take Time for Your Body.
-            </span>
-            <span className="hero-headline__line hero-headline__line--italic">
-              Take Time for Your Well-being.
-            </span>
-          </h1>
+          {/* BLOCK 02: Main Hero Headline Group */}
+          <div className="hero-block hero-block--headline">
+            <h1 className="hero-headline">
+              <span className="hero-headline__line hero-headline__line--roman">
+                Take Time for<br className="hero-br-mobile" /> Your Body.
+              </span>
+              <span className="hero-headline__line hero-headline__line--italic">
+                Take Time for<br className="hero-br-mobile" /> Your Well-being.
+              </span>
+            </h1>
+          </div>
 
-          {/* Supporting Paragraph */}
-          <p className="hero-paragraph">
-            Wellness experiences designed around relaxation, recovery support, body comfort, and overall well-being.
-          </p>
-
-          {/* Secondary Supporting Quote with Sage Border */}
-          <div className="hero-quote">
-            <p className="hero-quote__text">
-              Every individual has different needs, which is why we encourage a personalized approach when choosing a wellness experience.
+          {/* BLOCK 03: Supporting Description & Action CTAs */}
+          <div className="hero-block hero-block--details">
+            {/* Supporting Paragraph */}
+            <p className="hero-paragraph">
+              Wellness experiences designed around relaxation, recovery support, body comfort, and overall well-being.
             </p>
+
+            {/* Secondary Supporting Quote with Sage Border (Desktop Only) */}
+            <div className="hero-quote">
+              <p className="hero-quote__text">
+                Every individual has different needs, which is why we encourage a personalized approach when choosing a wellness experience.
+              </p>
+            </div>
+
+            {/* Action CTAs */}
+            <div className="hero-ctas">
+              <a href="#cta" className="hero-btn-primary">
+                <span className="hero-btn-primary__label">BOOK AN APPOINTMENT</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="hero-btn-icon"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 3L14 8M14 8L9 13M14 8H2"
+                    stroke="currentColor"
+                    strokeWidth="1.33333"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+
+              <a href="#therapy" className="hero-btn-secondary">
+                <span className="hero-btn-secondary__label">EXPLORE WELLNESS SERVICES</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="hero-btn-secondary__arrow"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 3L14 8M14 8L9 13M14 8H2"
+                    stroke="currentColor"
+                    strokeWidth="1.33333"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
+        </div>
 
-          {/* Action CTAs */}
-          <div className="hero-ctas">
-            <a href="#cta" className="hero-btn-primary">
-              <span className="hero-btn-primary__label">BOOK AN APPOINTMENT</span>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="hero-btn-icon"
-                aria-hidden="true"
-              >
-                <path
-                  d="M9 3L14 8M14 8L9 13M14 8H2"
-                  stroke="#FDFCFA"
-                  strokeWidth="1.33333"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </a>
-
-            <a href="#therapy" className="hero-btn-secondary">
-              EXPLORE WELLNESS SERVICES
-            </a>
+        {/* Zone 3: Editorial Wellness Values Micro-Footer Strip */}
+        <div className="hero-micro-footer">
+          <div className="hero-micro-item">
+            <span className="hero-micro-dot hero-micro-dot--sage hero-micro-dot--desktop" />
+            <span className="hero-micro-label">CLINICAL PRECISION</span>
           </div>
-
-          {/* Editorial Wellness Values Micro-Footer (Desktop) */}
-          <div className="hero-micro-footer">
-            <div className="hero-micro-item">
-              <span className="hero-micro-dot hero-micro-dot--sage" />
-              <span className="hero-micro-label">CLINICAL PRECISION</span>
-            </div>
-            <span className="hero-micro-separator" aria-hidden="true">•</span>
-            <div className="hero-micro-item">
-              <span className="hero-micro-dot hero-micro-dot--blue" />
-              <span className="hero-micro-label">TAILORED RECOVERY</span>
-            </div>
-            <span className="hero-micro-separator" aria-hidden="true">•</span>
-            <div className="hero-micro-item">
-              <span className="hero-micro-dot hero-micro-dot--blush" />
-              <span className="hero-micro-label">QUIET SANCTUARY</span>
-            </div>
+          <span className="hero-micro-separator" aria-hidden="true">•</span>
+          <div className="hero-micro-item">
+            <span className="hero-micro-dot hero-micro-dot--blue hero-micro-dot--desktop" />
+            <span className="hero-micro-label">TAILORED RECOVERY</span>
+          </div>
+          <span className="hero-micro-separator" aria-hidden="true">•</span>
+          <div className="hero-micro-item">
+            <span className="hero-micro-dot hero-micro-dot--blush hero-micro-dot--desktop" />
+            <span className="hero-micro-label">QUIET SANCTUARY</span>
           </div>
         </div>
       </div>
