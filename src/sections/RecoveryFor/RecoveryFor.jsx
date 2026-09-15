@@ -19,6 +19,13 @@ export const RecoveryFor = () => {
      * Driven directly by CinematicJourney's master progress & frame transition state using GSAP.
      */
     const updateRecoveryProgress = (rawP, rawVirtualVal, prevFrame, currFrame) => {
+      if (rawP < 0) {
+        stateRef.current.stage = 'initial';
+        gsap.set(loaderRef.current, { opacity: 0, y: 0, visibility: 'hidden' });
+        gsap.set(contentWrapperRef.current, { opacity: 0, y: 24, visibility: 'hidden', pointerEvents: 'none' });
+        return;
+      }
+
       const p = Math.max(0, Math.min(1, rawP));
       const v = rawVirtualVal !== undefined ? rawVirtualVal : p;
       const currentState = stateRef.current;

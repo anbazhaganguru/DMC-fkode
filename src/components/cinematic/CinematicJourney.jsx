@@ -453,13 +453,13 @@ export const CinematicJourney = ({ children }) => {
                       const therapyEl = el.querySelector('#therapy');
                       if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
                         const isPast = p > activePhase.end;
-                        therapyEl.updateTherapyProgress(isPast ? 1 : 0);
+                        therapyEl.updateTherapyProgress(isPast ? 1 : -1);
                       }
                     } else if (sec === 'recovery') {
                       const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
                       if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
                         const isPast = p > activePhase.end;
-                        recoveryEl.updateRecoveryProgress(isPast ? 1 : 0);
+                        recoveryEl.updateRecoveryProgress(isPast ? 1 : -1);
                       }
                     }
                   }
