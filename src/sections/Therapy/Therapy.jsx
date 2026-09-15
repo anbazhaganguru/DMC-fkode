@@ -8,6 +8,7 @@ export const Therapy = () => {
   const containerRef = useRef(null);
   const loaderRef = useRef(null);
   const contentWrapperRef = useRef(null);
+  const cardsTrackRef = useRef(null);
   const stateRef = useRef({ stage: 'initial' });
 
   useEffect(() => {
@@ -19,12 +20,17 @@ export const Therapy = () => {
     /**
      * Master Scroll Synchronizer for Therapy Section
      * Driven directly by CinematicJourney's master progress & frame transition state using GSAP.
+     * On Desktop: Controls section fade-in / stage state.
+     * On Mobile: Translates vertical page scroll progress into horizontal card journey (01 -> 06) with a subtle fade handoff into Recovery.
      */
     const updateTherapyProgress = (rawP, rawVirtualVal, prevFrame, currFrame) => {
       if (rawP < 0) {
         stateRef.current.stage = 'initial';
         gsap.set(loaderRef.current, { opacity: 0, y: 0, visibility: 'hidden' });
         gsap.set(contentWrapperRef.current, { opacity: 0, y: 24, visibility: 'hidden', pointerEvents: 'none' });
+        if (cardsTrackRef.current && window.innerWidth <= 768) {
+          gsap.set(cardsTrackRef.current, { x: 0 });
+        }
         return;
       }
 
@@ -37,23 +43,56 @@ export const Therapy = () => {
 
       if (!loader || !contentWrapper) return;
 
-      // Stage 1: Therapy Photo 1 STARTS (v < 0.50)
-      if (v < 0.50) {
+      // Stage 1: Therapy Photo 1 STARTS (v < 0.45) - Editorial Loader
+      if (v < 0.45) {
         if (currentState.stage !== 'photo1') {
           currentState.stage = 'photo1';
           ctx.add(() => {
-            gsap.to(loader, { opacity: 1, y: 0, duration: 0.6, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(loader, { opacity: 1, y: 0, duration: 0.5, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
             gsap.to(contentWrapper, { opacity: 0, y: 24, duration: 0.3, visibility: 'hidden', pointerEvents: 'none', ease: 'power2.out', overwrite: 'auto' });
+            if (cardsTrackRef.current && window.innerWidth <= 768) {
+              gsap.set(cardsTrackRef.current, { x: 0 });
+            }
           });
         }
       }
-      // Stage 2: Therapy Photo 2 STARTS (v >= 0.50) - Therapy Cards remain 100% visible!
+      // Stage 2: Therapy Cards Active (v >= 0.45)
       else {
         if (currentState.stage !== 'photo2') {
           currentState.stage = 'photo2';
           ctx.add(() => {
             gsap.to(loader, { opacity: 0, y: -12, duration: 0.4, visibility: 'hidden', ease: 'power2.out', overwrite: 'auto' });
-            gsap.to(contentWrapper, { opacity: 1, y: 0, duration: 0.8, visibility: 'visible', pointerEvents: 'auto', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(contentWrapper, { opacity: 1, y: 0, duration: 0.6, visibility: 'visible', pointerEvents: 'auto', ease: 'power2.out', overwrite: 'auto' });
+          });
+        }
+
+        // Mobile Vertical-Scroll-Driven Horizontal Card Track Movement & Recovery Handoff Fade
+        if (window.innerWidth <= 768 && cardsTrackRef.current) {
+          // Track movement from v = 0.45 to 0.92 (Card 01 centered to Card 06 centered)
+          const mobileP = Math.max(0, Math.min(1, (v - 0.45) / 0.47));
+          const snapItems = cardsTrackRef.current.children;
+
+          if (snapItems && snapItems.length >= 6) {
+            const cardWidth = snapItems[0].offsetWidth;
+            const gap = 16; // 16px gap between mobile cards
+            const stepDistance = cardWidth + gap;
+            const maxScroll = stepDistance * 5; // 5 steps to reach Card 06
+            const targetX = -mobileP * maxScroll;
+
+            gsap.to(cardsTrackRef.current, {
+              x: targetX,
+              duration: 0.1,
+              ease: 'none',
+              overwrite: 'auto'
+            });
+          }
+
+          // Subtle fade transition from v = 0.92 to 1.00 as user scrolls into Recovery
+          const fadeOpacity = v > 0.92 ? Math.max(0, 1 - (v - 0.92) / 0.08) : 1;
+          gsap.to(contentWrapper, {
+            opacity: fadeOpacity,
+            duration: 0.1,
+            overwrite: 'auto'
           });
         }
       }
@@ -107,15 +146,15 @@ export const Therapy = () => {
             </h2>
           </div>
 
-          <div className="therapy-cards-grid">
-            {therapyData.slice(0, 6).map((item) => (
-              <TherapyCard
-                key={item.id}
-                title={item.title}
-                description={item.description}
-                category={item.category}
-              />
-            ))}
+          {/* Desktop Wide 3x2 Grid / Mobile Pinned Horizontal Scroll Journey */}
+          <div className="therapy-cards-container">
+            <div ref={cardsTrackRef} className="therapy-cards-grid">
+              {therapyData.slice(0, 6).map((item, idx) => (
+                <div key={item.id} className="therapy-card-snap-item">
+                  <TherapyCard data={item} index={idx} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

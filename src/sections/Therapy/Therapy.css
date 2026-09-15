@@ -1,7 +1,6 @@
 /* ==========================================================================
    Cinematic Therapy Section CSS — Daniel Wellness Center (DWC)
-   2-Photo Sequence (01 Photo 1 -> 02 Photo 2 + Cards Reveal)
-   Editorial Chapter Loader (02 THERAPY) + Clean Cards Layout
+   Expanded 3x2 Grid Width (92%, max 1750px) + Mobile Vertical-Scroll Horizontal Journey
    ========================================================================== */
 
 .therapy-cinematic-stage {
@@ -31,9 +30,9 @@
   background:
     radial-gradient(
       ellipse 80% 70% at 50% 50%,
-      rgba(253, 252, 250, 0.88) 0%,
-      rgba(253, 252, 250, 0.60) 60%,
-      rgba(253, 252, 250, 0.25) 100%
+      rgba(10, 14, 18, 0.78) 0%,
+      rgba(8, 12, 16, 0.55) 60%,
+      rgba(6, 9, 12, 0.30) 100%
     );
 }
 
@@ -64,7 +63,7 @@
 .therapy-loader__line {
   width: 140px;
   height: 1px;
-  background: rgba(30, 37, 34, 0.18);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .therapy-loader__line--top {
@@ -85,12 +84,12 @@
 }
 
 .therapy-loader__title {
-  font-family: var(--font-serif);
+  font-family: 'Cinzel', 'Playfair Display', serif;
   font-size: clamp(64px, 7vw, 96px);
   font-weight: 300;
   line-height: 1.0;
   letter-spacing: 0.08em;
-  color: #1E2522;
+  color: #ffffff;
   margin: 0 0 12px 0;
   text-transform: uppercase;
 }
@@ -100,12 +99,12 @@
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2.5px;
-  color: #55605A;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
 }
 
 /* ==========================================================================
-   2. Main Therapy Cards Container
+   2. Main Therapy Cards Container — Expanded Wide 3x2 Grid
    ========================================================================== */
 .therapy-editorial-container {
   position: absolute;
@@ -113,30 +112,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 60px;
+  padding: 20px 20px;
   z-index: 3;
   pointer-events: auto;
   will-change: opacity, transform;
 }
 
 .therapy-editorial-inner {
-  width: 100%;
-  max-width: 1180px;
+  width: 94%;
+  max-width: 1780px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 auto;
 }
 
 .therapy-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .therapy-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
 }
 
 .therapy-eyebrow__dot {
@@ -157,7 +157,7 @@
 
 .therapy-eyebrow__divider {
   font-size: 11px;
-  color: rgba(30, 37, 34, 0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .therapy-eyebrow__text {
@@ -165,16 +165,16 @@
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2.2px;
-  color: #55605A;
+  color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
 }
 
 .therapy-headline {
-  font-family: var(--font-serif);
-  font-size: clamp(32px, 3.0vw, 44px);
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: clamp(26px, 2.4vw, 38px);
   line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: #1E2522;
+  letter-spacing: -0.01em;
+  color: #ffffff;
   margin: 0;
   font-weight: 300;
 }
@@ -182,79 +182,93 @@
 .therapy-headline--italic {
   font-style: italic;
   font-weight: 400;
+  color: #7AAFA2;
 }
 
-/* 6 Cards Grid */
+/* Desktop Cards Grid Layout */
+.therapy-cards-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .therapy-cards-grid {
   width: 100%;
+  max-width: 1780px;
+  margin-inline: auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 24px;
+  align-items: stretch;
 }
 
-.therapy-card {
-  background: #FAF7F2;
-  border: 1px solid rgba(30, 37, 34, 0.10);
-  border-radius: 16px;
-  padding: 24px 24px;
+.therapy-card-snap-item {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 8px 24px rgba(30, 37, 34, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.therapy-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(30, 37, 34, 0.08);
-}
-
-.therapy-card__category {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
-  color: #7AAFA2;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.therapy-card__title {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.25;
-  color: #1E2522;
-  margin: 0 0 8px 0;
-}
-
-.therapy-card__description {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.55;
-  color: #55605A;
-  margin: 0;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
-@media (max-width: 1024px) {
-  .therapy-editorial-container {
-    padding: 60px 40px;
+
+/* 1440px & Laptop displays */
+@media (max-width: 1440px) {
+  .therapy-editorial-inner {
+    width: 94%;
+    max-width: 1780px;
   }
 
   .therapy-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    column-gap: 24px;
+    row-gap: 24px;
+  }
+}
+
+/* 1280px displays */
+@media (max-width: 1280px) {
+  .therapy-editorial-inner {
+    width: 94%;
+    max-width: 1780px;
+  }
+
+  .therapy-cards-grid {
+    column-gap: 20px;
+    row-gap: 20px;
+  }
+}
+
+/* Tablet (Landscape & Portrait) */
+@media (max-width: 1024px) {
+  .therapy-editorial-container {
+    padding: 24px 20px;
+  }
+
+  .therapy-cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    row-gap: 16px;
+  }
+
+  .therapy-header {
+    margin-bottom: 14px;
+  }
+}
+
+@media (max-width: 868px) {
+  .therapy-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
 }
 
+/* Mobile: Vertical Page Scroll Drives Horizontal Card Journey (01 -> 06) */
 @media (max-width: 768px) {
   .therapy-loader__title {
-    font-size: 56px;
+    font-size: 52px;
   }
 
   .therapy-loader__subtitle {
@@ -263,29 +277,46 @@
   }
 
   .therapy-editorial-container {
-    padding: 40px 20px;
+    padding: 60px 0 20px 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .therapy-editorial-inner {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .therapy-header {
+    padding: 0 20px;
+    margin-bottom: 12px;
   }
 
   .therapy-headline {
-    font-size: 26px;
+    font-size: 24px;
+  }
+
+  .therapy-cards-container {
+    width: 100%;
+    overflow: hidden;
+    pointer-events: auto;
+    padding: 10px 0;
   }
 
   .therapy-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    max-height: 60vh;
-    overflow-y: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    grid-template-columns: none;
+    gap: 16px;
+    width: max-content;
+    padding-left: calc(50vw - (min(calc(100vw - 40px), 350px) / 2));
+    will-change: transform;
   }
 
-  .therapy-card {
-    padding: 18px 20px;
-  }
-
-  .therapy-card__title {
-    font-size: 18px;
-  }
-
-  .therapy-card__description {
-    font-size: 12.5px;
+  .therapy-card-snap-item {
+    width: calc(100vw - 40px);
+    max-width: 350px;
+    flex-shrink: 0;
+    box-sizing: border-box;
   }
 }

@@ -363,10 +363,9 @@
   }
 
   .about-editorial-container {
-    padding: 0 24px;
-    align-items: flex-end;
-    padding-bottom: clamp(24px, 6vh, 48px);
-    justify-content: center;
+    padding: calc(60px + env(safe-area-inset-top, 0px)) 24px calc(48px + env(safe-area-inset-bottom, 0px)) 24px;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .about-editorial-inner {
@@ -427,8 +426,11 @@
 
 @media (max-width: 430px) {
   .about-editorial-container {
-    padding: 0 18px;
-    padding-bottom: 24px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .about-headline {

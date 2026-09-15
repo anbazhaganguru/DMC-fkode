@@ -483,25 +483,29 @@ export const CinematicJourney = ({ children }) => {
         const href = anchor.getAttribute('href');
         const targetId = href.replace('#', '');
 
-        // Find phase matching targetId
-        let targetPhase = null;
-        if (targetId === 'home') targetPhase = JOURNEY_PHASES[0];
-        else if (targetId === 'about') targetPhase = JOURNEY_PHASES[2];
-        else if (targetId === 'therapy') targetPhase = JOURNEY_PHASES[4];
-        else if (targetId === 'recovery-for' || targetId === 'recovery') targetPhase = JOURNEY_PHASES[6];
-        else if (targetId === 'cta') {
-          // Scroll to the end of the journey pin
+        if (targetId === 'home') {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        if (targetId === 'cta') {
           e.preventDefault();
           const targetScroll = mainTrigger.end + 50;
           window.scrollTo({ top: targetScroll, behavior: 'smooth' });
           return;
         }
 
+        // Find phase matching targetId
+        const targetPhase = JOURNEY_PHASES.find(
+          (p) => p.section === targetId || p.id === targetId || (targetId === 'recovery-for' && p.section === 'recovery')
+        );
+
         if (targetPhase) {
           e.preventDefault();
           const triggerStart = mainTrigger.start;
           const triggerDistance = mainTrigger.end - mainTrigger.start;
-          const targetScroll = triggerStart + targetPhase.start * triggerDistance + 10;
+          const targetScroll = triggerStart + targetPhase.start * triggerDistance + 20;
           window.scrollTo({ top: targetScroll, behavior: 'smooth' });
         }
       };

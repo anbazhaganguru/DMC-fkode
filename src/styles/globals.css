@@ -1105,11 +1105,11 @@ body {
   }
 
   .hero-container {
-    padding-top: calc(60px + clamp(22px, 4.8vh, 48px) + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(clamp(20px, 4vh, 36px) + env(safe-area-inset-bottom, 0px));
-    padding-left: clamp(24px, 6vw, 48px);
-    padding-right: clamp(24px, 6vw, 48px);
-    justify-content: space-between;
+    padding-top: calc(60px + clamp(16px, 3vh, 32px) + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-left: clamp(20px, 5vw, 40px);
+    padding-right: clamp(20px, 5vw, 40px);
+    justify-content: flex-end !important;
     align-items: flex-start;
     height: 100vh;
     height: 100svh;
@@ -1120,15 +1120,14 @@ body {
     flex-direction: column;
   }
 
-  /* Zone 2: Middle Content Group Centered Vertically */
+  /* Zone 2: Middle Content Group Positioned in Lower Portion */
   .hero-main-group {
-    flex: 1;
+    flex: 0 1 auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: flex-start;
     width: 100%;
-    margin: auto 0;
   }
 
   /* BLOCK 01: Eyebrow */
@@ -1510,12 +1509,7 @@ body {
 
 /* Therapy Cards Container on top of Canvas */
 .therapy-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--spacing-md);
   width: 100%;
-  max-width: 960px;
-  margin-top: var(--spacing-md);
 }
 
 .therapy-card {

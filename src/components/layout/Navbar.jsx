@@ -6,11 +6,21 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      const scrollY = window.scrollY;
       const journeyEl = document.getElementById('cinematic-journey');
       if (journeyEl) {
         const rect = journeyEl.getBoundingClientRect();
-        if (rect.bottom < window.innerHeight / 2) {
+        const totalHeight = rect.height - window.innerHeight;
+        if (totalHeight > 0 && rect.top <= 0 && rect.bottom > window.innerHeight / 2) {
+          const progress = -rect.top / totalHeight;
+          if (progress < 0.25) setActiveSection('home');
+          else if (progress < 0.50) setActiveSection('about');
+          else if (progress < 0.75) setActiveSection('therapy');
+          else setActiveSection('recovery-for');
+        } else if (rect.bottom <= window.innerHeight / 2 || scrollY > 3000) {
           setActiveSection('cta');
+        } else if (scrollY < 100) {
+          setActiveSection('home');
         }
       }
     };
