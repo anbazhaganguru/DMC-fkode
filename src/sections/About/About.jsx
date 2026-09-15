@@ -34,8 +34,8 @@ export const About = () => {
 
       if (!loader || !contentWrapper || !firstHalf || !secondHalf) return;
 
-      // Stage 0: Initial / Home Photo 5 (About Loader active & visible)
-      if (p <= 0.0) {
+      // Stage 0: Initial / Home Photo 5 & Early About Photo 1 (About Loader active & visible)
+      if (v < 0.35) {
         if (currentState.stage !== 'loader') {
           currentState.stage = 'loader';
           ctx.add(() => {
@@ -46,8 +46,8 @@ export const About = () => {
           });
         }
       }
-      // Stage 1: About Photo 1 STARTS (p > 0.0 && v < 0.50)
-      else if (v < 0.50) {
+      // Stage 1: About Photo 1 Mid-Point (First-Half Content Reveals, Loader Dissolves)
+      else if (v < 0.70) {
         if (currentState.stage !== 'photo1') {
           currentState.stage = 'photo1';
           ctx.add(() => {
@@ -58,7 +58,7 @@ export const About = () => {
           });
         }
       }
-      // Stage 2: About Photo 2 STARTS (v >= 0.50) - BOTH First and Second half content remain 100% visible!
+      // Stage 2: About Photo 2 (Second-Half Content Reveals alongside First-Half)
       else {
         if (currentState.stage !== 'photo2') {
           currentState.stage = 'photo2';
