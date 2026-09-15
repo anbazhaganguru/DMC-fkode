@@ -5,21 +5,39 @@
 export const therapyData = [
   {
     id: 'therapy-1',
-    title: 'Therapy Item 1',
-    description: 'Treatment description placeholder',
-    category: 'General'
+    title: 'Reflexology',
+    description: 'Targeted physical protocols designed to restore physical balance and tension release.',
+    category: 'THERAPY 01'
   },
   {
     id: 'therapy-2',
-    title: 'Therapy Item 2',
-    description: 'Treatment description placeholder',
-    category: 'Specialized'
+    title: 'Taping Therapy',
+    description: 'Specialized muscle support and structural alignment protocols.',
+    category: 'THERAPY 02'
   },
   {
     id: 'therapy-3',
-    title: 'Therapy Item 3',
-    description: 'Treatment description placeholder',
-    category: 'Wellness'
+    title: 'Ice Bath Therapy',
+    description: 'Calibrated cryo recovery promoting circulation and cellular revitalization.',
+    category: 'THERAPY 03'
+  },
+  {
+    id: 'therapy-4',
+    title: 'Steam Bath',
+    description: 'Deep thermal relaxation encouraging muscle decompression and detoxification.',
+    category: 'THERAPY 04'
+  },
+  {
+    id: 'therapy-5',
+    title: 'Cupping Therapy',
+    description: 'Somatic tissue decompression releasing persistent muscular tightness.',
+    category: 'THERAPY 05'
+  },
+  {
+    id: 'therapy-6',
+    title: 'Bamboo Therapy',
+    description: 'Rhythmic deep-tissue pressure restoring whole-body physical equilibrium.',
+    category: 'THERAPY 06'
   }
 ];
 

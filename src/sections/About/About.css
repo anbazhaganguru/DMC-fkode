@@ -1,434 +1,442 @@
 /* ==========================================================================
    Cinematic About Section CSS — Daniel Wellness Center (DWC)
-   Editorial Medical-Wellness Right-Anchored Foreground Composition
+   Opposite Visual Composition (LEFT = Image, RIGHT = Content)
+   Organic Feathered Ivory Fade + Editorial GSAP Reveal Mechanics
    ========================================================================== */
 
-.about-section {
+.about-cinematic-stage {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
+  pointer-events: none;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* --------------------------------------------------------------------------
-   Atmosphere Protection Layers (Extended Warm Ivory/White Right Fade)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   Organic Feathered Ivory/White Atmosphere Overlay
+   Begins ~45-50%, occupying right ~30-35%, dissolving into solid ivory
+   ========================================================================== */
 .about-atmosphere {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
 }
 
-/* Extended, High-Intensity Soft Warm Ivory/White Right Side Fade */
-.about-atmosphere__right {
+.about-fade-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to right,
+      rgba(250, 247, 242, 0) 0%,
+      rgba(250, 247, 242, 0) 44%,
+      rgba(250, 247, 242, 0.22) 50%,
+      rgba(250, 247, 242, 0.58) 56%,
+      rgba(250, 247, 242, 0.88) 62%,
+      rgba(250, 247, 242, 0.98) 68%,
+      rgba(250, 247, 242, 1.0) 74%,
+      rgba(250, 247, 242, 1.0) 100%
+    ),
+    radial-gradient(
+      ellipse 65% 85% at 75% 50%,
+      rgba(250, 247, 242, 0.95) 0%,
+      rgba(250, 247, 242, 0.60) 65%,
+      rgba(250, 247, 242, 0) 100%
+    );
+}
+
+/* ==========================================================================
+   1. Centered Editorial Chapter Loader (01 ABOUT)
+   ========================================================================== */
+.about-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.about-loader__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 48px;
+  position: relative;
+}
+
+.about-loader__line {
+  width: 140px;
+  height: 1px;
+  background: rgba(30, 37, 34, 0.18);
+}
+
+.about-loader__line--top {
+  margin-bottom: 24px;
+}
+
+.about-loader__line--bottom {
+  margin-top: 24px;
+}
+
+.about-loader__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #7AAFA2;
+  margin-bottom: 8px;
+}
+
+.about-loader__title {
+  font-family: var(--font-serif);
+  font-size: clamp(64px, 7vw, 96px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: 0.08em;
+  color: #1E2522;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+}
+
+.about-loader__subtitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: #55605A;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   2. Main Right-Aligned Editorial Content Area
+   - Right side (approx 5vw-6vw from right)
+   - Width approx 34vw-38vw
+   - Left aligned, vertically centered
+   ========================================================================== */
+.about-editorial-container {
   position: absolute;
   top: 0;
   right: 0;
-  width: clamp(540px, 60vw, 1300px);
-  max-width: 72vw;
-  height: 100%;
-  background: linear-gradient(
-    270deg,
-    rgba(250, 246, 240, 0.99) 0%,
-    rgba(250, 246, 240, 0.98) 32%,
-    rgba(250, 246, 240, 0.92) 52%,
-    rgba(250, 246, 240, 0.75) 72%,
-    rgba(250, 246, 240, 0.45) 86%,
-    rgba(250, 246, 240, 0.15) 95%,
-    rgba(250, 246, 240, 0) 100%
-  );
-}
-
-/* Subtle Top Fade for Header/Navbar Contrast */
-.about-atmosphere__top {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 144px;
-  background: linear-gradient(
-    180deg,
-    rgba(250, 246, 240, 0.85) 0%,
-    rgba(250, 246, 240, 0.40) 50%,
-    rgba(250, 246, 240, 0) 100%
-  );
-}
-
-/* --------------------------------------------------------------------------
-   Main Foreground Content Container (Anchored Strictly to the Right)
-   -------------------------------------------------------------------------- */
-.about-container {
-  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: clamp(40px, 5.5vw, 90px);
   z-index: 3;
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: calc(var(--header-height) + clamp(0px, 1.2vh, 16px)) clamp(20px, 5.5vw, 100px) clamp(32px, 5vh, 64px) clamp(20px, 5.5vw, 100px);
-  height: 100%;
-  max-height: 100vh;
-  max-height: 100dvh;
+  pointer-events: auto;
+}
+
+.about-editorial-inner {
+  width: clamp(340px, 36vw, 540px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-end; /* Mirrored layout: Content positioned strictly on the RIGHT side */
-  overflow: hidden;
+  gap: 0;
+  text-align: left;
 }
 
-/* Main Content Group Constrained Strictly to Right 34-38% */
-.about-main-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: min(38vw, 540px);
-  max-width: 100%;
-  margin-left: auto; /* Forces content to stay cleanly inside the right faded zone */
+/* Content Groups (First & Second) */
+.about-content-group {
+  will-change: opacity, transform;
 }
 
-/* 2-Stage Cumulative Content Reveal Groups (Strict Initial Hidden States) */
-.about-stage-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  will-change: transform, opacity;
+.about-content-group--first {
+  margin-bottom: 28px;
 }
 
-.about-stage-group--1 {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(20px);
-  margin-bottom: clamp(4px, 1vh, 10px);
+.about-content-group--second {
+  margin-top: 0;
 }
 
-.about-stage-group--2 {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(20px);
-}
-
-.about-block {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Text inside block reads left-to-right */
-}
-
-/* --------------------------------------------------------------------------
-   BLOCK 01: Eyebrow Tag Pill
-   -------------------------------------------------------------------------- */
-.about-block--eyebrow {
-  margin-bottom: clamp(14px, 3.2vh, 36px);
-  width: fit-content;
-  max-width: 100%;
-  flex-shrink: 0;
-}
-
+/* Eyebrow Tag */
 .about-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid var(--color-dwc-border);
-  border-radius: 9999px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  margin-bottom: 0;
-  max-width: 100%;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .about-eyebrow__dot {
-  width: 4.5px;
-  height: 4.5px;
-  border-radius: 9999px;
-  background-color: var(--color-dwc-sage);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7AAFA2;
   flex-shrink: 0;
+}
+
+.about-eyebrow__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #7AAFA2;
+}
+
+.about-eyebrow__divider {
+  font-size: 11px;
+  color: rgba(30, 37, 34, 0.3);
 }
 
 .about-eyebrow__text {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(9px, 0.7vw + 6px, 10.5px);
-  line-height: 14px;
-  letter-spacing: 0.14em;
-  color: var(--color-dwc-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  color: #55605A;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
-/* --------------------------------------------------------------------------
-   BLOCK 02: Main Editorial Heading
-   -------------------------------------------------------------------------- */
-.about-block--headline {
-  margin-bottom: clamp(14px, 2.8vh, 28px);
-  width: 100%;
-  flex-shrink: 0;
-}
-
+/* Headline */
 .about-headline {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  text-align: left;
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 3.2vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #1E2522;
+  margin: 0 0 20px 0;
+  font-weight: 300;
 }
 
 .about-headline__line {
-  font-family: var(--font-serif);
-  font-size: clamp(32px, 3.1vw + 6px, 52px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--color-dwc-dark);
   display: block;
-  word-break: break-word;
-}
-
-.about-headline__line--roman {
-  font-weight: 400;
-  font-style: normal;
 }
 
 .about-headline__line--italic {
-  font-weight: 400;
   font-style: italic;
-  opacity: 0.92;
+  font-weight: 400;
 }
 
-/* --------------------------------------------------------------------------
-   BLOCK 03: Paragraph, Quote & CTAs
-   -------------------------------------------------------------------------- */
-.about-block--details {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-
-/* Supporting Paragraph */
+/* Paragraphs */
 .about-paragraph {
   font-family: var(--font-sans);
+  font-size: clamp(14.5px, 1.05vw, 16px);
   font-weight: 400;
-  font-size: clamp(13px, 0.85vw + 4px, 16px);
-  line-height: 1.55;
-  color: var(--color-dwc-muted);
-  max-width: 480px;
-  margin: 0 0 clamp(10px, 1.6vh, 16px) 0;
-  text-align: left;
-}
-
-/* Secondary Supporting Line / Quote */
-.about-quote {
-  border-left: 1.5px solid rgba(122, 175, 162, 0.50);
-  padding-left: 12px;
-  margin: 0 0 clamp(14px, 2.2vh, 22px) 0;
-  max-width: 480px;
-}
-
-.about-quote__text {
-  font-family: var(--font-sans);
-  font-weight: 300;
-  font-size: clamp(11.5px, 0.7vw + 3.5px, 13.5px);
-  line-height: 1.48;
-  color: var(--color-dwc-muted);
-  opacity: 0.85;
-  text-align: left;
+  line-height: 1.62;
+  color: #35403B;
   margin: 0;
+}
+
+.about-paragraph--first {
+  margin-bottom: 0;
+}
+
+.about-paragraph--second {
+  margin-bottom: 24px;
 }
 
 /* Action CTAs */
 .about-ctas {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 1vw, 12px);
-  width: 100%;
+  gap: 16px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
 }
 
-/* Primary CTA Button */
 .about-btn-primary {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  height: clamp(36px, 2.5vw, 42px);
-  padding: 0 clamp(14px, 1.4vw, 22px);
+  gap: 10px;
+  background: #1E2522;
+  color: #FDFCFA;
+  padding: 14px 26px;
   border-radius: 9999px;
-  background-color: var(--color-dwc-dark);
-  color: var(--color-dwc-cream);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
   text-decoration: none;
-  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.10), 0 4px 6px -1px rgba(0, 0, 0, 0.10);
-  transition: all 0.2s ease;
-  gap: 8px;
-  white-space: nowrap;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 4px 16px rgba(30, 37, 34, 0.12);
 }
 
 .about-btn-primary:hover {
+  background: #2D3733;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15), 0 6px 12px -1px rgba(0, 0, 0, 0.12);
-  opacity: 0.95;
-}
-
-.about-btn-primary__label {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(10px, 0.6vw + 4px, 11.5px);
-  line-height: 16px;
-  letter-spacing: 0.12em;
-  color: var(--color-dwc-cream);
 }
 
 .about-btn-icon {
-  display: inline-block;
-  width: 13px;
-  height: 13px;
-  opacity: 0.80;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
-/* Secondary CTA Button */
 .about-btn-secondary {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  height: clamp(36px, 2.5vw, 42px);
-  padding: 0 clamp(14px, 1.4vw, 20px);
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--color-dwc-border-strong);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  gap: 8px;
-  white-space: nowrap;
+  color: #1E2522;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
   text-decoration: none;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(30, 37, 34, 0.25);
+  transition: border-color 0.25s ease, color 0.25s ease;
 }
 
 .about-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.92);
-  transform: translateY(-1px);
+  color: #7AAFA2;
+  border-color: #7AAFA2;
 }
 
-.about-btn-secondary__label {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(10px, 0.6vw + 4px, 11.5px);
-  line-height: 16px;
-  letter-spacing: 0.12em;
-  color: var(--color-dwc-dark);
-}
-
-.about-btn-secondary__arrow {
-  display: inline-block;
-  width: 13px;
-  height: 13px;
-  opacity: 0.70;
-  color: var(--color-dwc-dark);
-  flex-shrink: 0;
-}
-
-/* --------------------------------------------------------------------------
-   Bottom Right Micro Label Bar
-   -------------------------------------------------------------------------- */
-.about-bottom-bar {
-  position: absolute;
-  bottom: clamp(16px, 3vh, 32px);
-  right: clamp(20px, 5.5vw, 100px);
-  z-index: 4;
-  display: none;
-  opacity: 0;
-  visibility: hidden;
+/* Micro Footer */
+.about-micro-footer {
+  display: flex;
   align-items: center;
-  pointer-events: none;
+  gap: 8px;
+  border-top: 1px solid rgba(30, 37, 34, 0.10);
+  padding-top: 16px;
 }
 
-.about-bottom-bar__left {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.about-micro-dash {
+  color: #7AAFA2;
+  font-size: 11px;
 }
 
-.about-bottom-bar__divider {
-  width: 24px;
-  height: 1px;
-  background-color: var(--color-dwc-muted);
-  opacity: 0.35;
-}
-
-.about-bottom-bar__label {
+.about-micro-label {
   font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: clamp(8.5px, 0.5vw + 3.5px, 10px);
-  line-height: 14px;
-  letter-spacing: 0.15em;
-  color: var(--color-dwc-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #55605A;
   text-transform: uppercase;
-  opacity: 0.75;
-  white-space: nowrap;
+  opacity: 0.85;
 }
 
-/* --------------------------------------------------------------------------
-   Responsive Media Queries (Mobile & Tablet <= 1024px)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   Responsive Adaptations (Tablet & Mobile)
+   320px, 375px, 390px, 414px, 430px, 768px, 820px, 1024px
+   ========================================================================== */
+
 @media (max-width: 1024px) {
-  .about-atmosphere__right {
+  .about-editorial-container {
+    padding-right: 4vw;
+  }
+
+  .about-editorial-inner {
+    width: clamp(320px, 44vw, 460px);
+  }
+
+  .about-loader__title {
+    font-size: 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Soft feathered overlay adapted for mobile viewports */
+  .about-fade-overlay {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(250, 247, 242, 0.25) 0%,
+        rgba(250, 247, 242, 0.65) 25%,
+        rgba(250, 247, 242, 0.94) 50%,
+        rgba(250, 247, 242, 0.98) 75%,
+        rgba(250, 247, 242, 1.0) 100%
+      ),
+      radial-gradient(
+        circle at 50% 30%,
+        rgba(250, 247, 242, 0.35) 0%,
+        rgba(250, 247, 242, 0.92) 70%
+      );
+  }
+
+  .about-loader__title {
+    font-size: 56px;
+  }
+
+  .about-loader__subtitle {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+  }
+
+  .about-editorial-container {
+    padding: 0 24px;
+    align-items: flex-end;
+    padding-bottom: clamp(24px, 6vh, 48px);
+    justify-content: center;
+  }
+
+  .about-editorial-inner {
     width: 100%;
-    max-width: 100%;
-    background: linear-gradient(
-      180deg,
-      rgba(250, 246, 240, 0.95) 0%,
-      rgba(250, 246, 240, 0.88) 55%,
-      rgba(250, 246, 240, 0.65) 100%
-    );
+    max-width: 440px;
   }
 
-  .about-container {
-    align-items: flex-start;
-    padding-left: clamp(20px, 5vw, 36px);
-    padding-right: clamp(20px, 5vw, 36px);
+  .about-content-group--first {
+    margin-bottom: 20px;
   }
 
-  .about-main-group {
-    width: 100%;
-    max-width: 88vw;
-    margin-left: 0;
+  .about-headline {
+    font-size: 28px;
+    line-height: 1.16;
+    margin-bottom: 14px;
   }
 
-  .about-block--headline {
-    max-width: 88vw;
+  .about-paragraph {
+    font-size: 14px;
+    line-height: 1.55;
   }
 
-  .about-block--details {
-    max-width: 88vw;
+  .about-paragraph--second {
+    margin-bottom: 20px;
   }
 
   .about-ctas {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    width: 100%;
-    max-width: 320px;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
-  .about-btn-primary,
+  .about-btn-primary {
+    padding: 12px 20px;
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    width: 100%;
+    justify-content: center;
+  }
+
   .about-btn-secondary {
+    padding: 8px 0;
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
     width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 
-  .about-bottom-bar {
-    left: clamp(20px, 5vw, 36px);
-    right: auto;
-    bottom: 20px;
+  .about-micro-footer {
+    padding-top: 12px;
+  }
+
+  .about-micro-label {
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
   }
 }
+
+@media (max-width: 430px) {
+  .about-editorial-container {
+    padding: 0 18px;
+    padding-bottom: 24px;
+  }
+
+  .about-headline {
+    font-size: 25px;
+  }
+
+  .about-loader__title {
+    font-size: 48px;
+  }
+}
+

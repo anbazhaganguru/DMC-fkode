@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Cinematic Recovery Section CSS — Daniel Wellness Center (DWC)
+   2-Photo Sequence (01 Photo 1 -> 02 Photo 2 + Content Reveal)
+   Editorial Chapter Loader (03 RECOVERY) + Restorative Atmosphere
+   ========================================================================== */
+
+.recovery-cinematic-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Atmosphere Overlay
+   ========================================================================== */
+.recovery-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.recovery-fade-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 75% 75% at 50% 50%,
+      rgba(253, 252, 250, 0.90) 0%,
+      rgba(253, 252, 250, 0.65) 60%,
+      rgba(253, 252, 250, 0.20) 100%
+    );
+}
+
+/* ==========================================================================
+   1. Centered Editorial Chapter Loader (03 RECOVERY)
+   ========================================================================== */
+.recovery-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.recovery-loader__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 48px;
+  position: relative;
+}
+
+.recovery-loader__line {
+  width: 140px;
+  height: 1px;
+  background: rgba(30, 37, 34, 0.18);
+}
+
+.recovery-loader__line--top {
+  margin-bottom: 24px;
+}
+
+.recovery-loader__line--bottom {
+  margin-top: 24px;
+}
+
+.recovery-loader__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #7AAFA2;
+  margin-bottom: 8px;
+}
+
+.recovery-loader__title {
+  font-family: var(--font-serif);
+  font-size: clamp(64px, 7vw, 96px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: 0.08em;
+  color: #1E2522;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+}
+
+.recovery-loader__subtitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: #55605A;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   2. Main Recovery Editorial Content Container
+   ========================================================================== */
+.recovery-editorial-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 60px;
+  z-index: 3;
+  pointer-events: auto;
+  will-change: opacity, transform;
+}
+
+.recovery-editorial-inner {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 42px 48px;
+  background: rgba(253, 252, 250, 0.94);
+  border: 1px solid rgba(30, 37, 34, 0.10);
+  border-radius: 28px;
+  box-shadow:
+    0 24px 64px rgba(30, 37, 34, 0.06),
+    0 4px 16px rgba(30, 37, 34, 0.02);
+}
+
+.recovery-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.recovery-eyebrow__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7AAFA2;
+  flex-shrink: 0;
+}
+
+.recovery-eyebrow__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #7AAFA2;
+}
+
+.recovery-eyebrow__divider {
+  font-size: 11px;
+  color: rgba(30, 37, 34, 0.3);
+}
+
+.recovery-eyebrow__text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  color: #55605A;
+  text-transform: uppercase;
+}
+
+.recovery-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 3.2vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #1E2522;
+  margin: 0 0 16px 0;
+  font-weight: 300;
+}
+
+.recovery-headline--italic {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.recovery-paragraph {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.05vw, 15.5px);
+  font-weight: 400;
+  line-height: 1.62;
+  color: #35403B;
+  margin: 0 0 24px 0;
+  max-width: 580px;
+}
+
+/* Recovery Pillars List */
+.recovery-pillars {
+  width: 100%;
+  border-top: 1px solid rgba(30, 37, 34, 0.10);
+  border-bottom: 1px solid rgba(30, 37, 34, 0.10);
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.recovery-pillar-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.recovery-pillar-num {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #7AAFA2;
+}
+
+.recovery-pillar-title {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  color: #1E2522;
+  text-transform: uppercase;
+}
+
+.recovery-micro-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recovery-micro-dash {
+  color: #7AAFA2;
+  font-size: 11px;
+}
+
+.recovery-micro-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #55605A;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 768px) {
+  .recovery-loader__title {
+    font-size: 56px;
+  }
+
+  .recovery-loader__subtitle {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+  }
+
+  .recovery-editorial-container {
+    padding: 40px 20px;
+  }
+
+  .recovery-editorial-inner {
+    padding: 28px 24px;
+    border-radius: 20px;
+  }
+
+  .recovery-headline {
+    font-size: 26px;
+  }
+
+  .recovery-paragraph {
+    font-size: 13.5px;
+  }
+
+  .recovery-pillar-title {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+  }
+}

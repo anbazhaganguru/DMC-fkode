@@ -47,31 +47,25 @@ function preloadImage(url) {
   });
 }
 
-function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale = 1.0, originX = 0.5, originY = 0.5) {
+function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale = 1.0) {
   if (!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return;
 
-  const imgRatio = img.naturalWidth / img.naturalHeight;
-  const canvasRatio = canvasWidth / canvasHeight;
-  let baseWidth, baseHeight;
-
-  if (canvasRatio > imgRatio) {
-    baseWidth = canvasWidth;
-    baseHeight = canvasWidth / imgRatio;
-  } else {
-    baseHeight = canvasHeight;
-    baseWidth = canvasHeight * imgRatio;
-  }
+  // Unified centered cover fit derived strictly from canvas container dimensions
+  const scaleCover = Math.max(canvasWidth / img.naturalWidth, canvasHeight / img.naturalHeight);
+  const baseWidth = img.naturalWidth * scaleCover;
+  const baseHeight = img.naturalHeight * scaleCover;
 
   const renderWidth = baseWidth * scale;
   const renderHeight = baseHeight * scale;
-  const offsetX = (canvasWidth - renderWidth) * originX;
-  const offsetY = (canvasHeight - renderHeight) * originY;
 
-  ctx.globalAlpha = alpha;
-  ctx.drawImage(img, offsetX, offsetY, renderWidth, renderHeight);
+  const drawX = (canvasWidth - renderWidth) / 2;
+  const drawY = (canvasHeight - renderHeight) / 2;
+
+  ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+  ctx.drawImage(img, drawX, drawY, renderWidth, renderHeight);
 }
 
-function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth, canvasHeight, section = 'home') {
+function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth, canvasHeight, isHome = false) {
   const total = activeFrames.length;
   if (total === 0) return;
 
@@ -87,27 +81,16 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  // Continuous camera movement driven by section progress
   let cameraScale = 1.0;
-  let originX = 0.5;
-  let originY = 0.5;
-
-  if (section === 'home') {
+  if (isHome) {
     const overallProgress = maxIndex > 0 ? clampedVirtual / maxIndex : 0;
-    cameraScale = 1.0 + (overallProgress * 0.06);
-    originX = 0.50 + (overallProgress * 0.035);
-    originY = 0.50 + (overallProgress * 0.025);
-  } else if (section === 'about') {
-    const overallProgress = maxIndex > 0 ? clampedVirtual / maxIndex : 0;
-    cameraScale = 1.0 + (overallProgress * 0.05);
-    originX = 0.50 + (overallProgress * 0.020);
-    originY = 0.50 + (overallProgress * 0.015);
+    cameraScale = 1.0 + (overallProgress * 0.04);
   }
 
   if (baseIndex === nextIndex || !nextImg || !nextImg.complete) {
     if (baseImg && baseImg.complete) {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale, originX, originY);
+      drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale);
       ctx.globalAlpha = 1.0;
     }
     return;
@@ -115,25 +98,30 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
 
   let nextAlpha = 0;
   if (total === 2) {
-    // 2-frame sequence (About: 02 -> 05): wide, luxurious smooth cross-dissolve
-    // 0.00 -> 0.18: Frame 0 established cleanly
-    // 0.18 -> 0.82: gradual cinematic progression into Frame 1
-    // 0.82 -> 1.00: Frame 1 settles fully into final state before transition
-    if (fraction <= 0.18) {
+    if (fraction <= 0.15) {
       nextAlpha = 0;
-    } else if (fraction >= 0.82) {
+    } else if (fraction >= 0.85) {
       nextAlpha = 1;
     } else {
-      const t = (fraction - 0.18) / 0.64;
+      const t = (fraction - 0.15) / 0.70;
       nextAlpha = t * t * (3 - 2 * t);
     }
-  } else {
-    if (fraction <= 0.30) {
+  } else if (isHome && baseIndex === 3 && nextIndex === 4) {
+    if (fraction <= 0.0) {
       nextAlpha = 0;
     } else if (fraction >= 0.70) {
       nextAlpha = 1;
     } else {
-      const t = (fraction - 0.30) / 0.40;
+      const t = fraction / 0.70;
+      nextAlpha = t * t * (3 - 2 * t);
+    }
+  } else {
+    if (fraction <= 0.25) {
+      nextAlpha = 0;
+    } else if (fraction >= 0.75) {
+      nextAlpha = 1;
+    } else {
+      const t = (fraction - 0.25) / 0.50;
       nextAlpha = t * t * (3 - 2 * t);
     }
   }
@@ -141,12 +129,12 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   if (nextAlpha <= 0) {
-    drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale, originX, originY);
+    drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale);
   } else if (nextAlpha >= 1) {
-    drawSingleCover(ctx, nextImg, canvasWidth, canvasHeight, 1.0, cameraScale, originX, originY);
+    drawSingleCover(ctx, nextImg, canvasWidth, canvasHeight, 1.0, cameraScale);
   } else {
-    drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale, originX, originY);
-    drawSingleCover(ctx, nextImg, canvasWidth, canvasHeight, nextAlpha, cameraScale, originX, originY);
+    drawSingleCover(ctx, baseImg, canvasWidth, canvasHeight, 1.0, cameraScale);
+    drawSingleCover(ctx, nextImg, canvasWidth, canvasHeight, nextAlpha, cameraScale);
   }
 
   ctx.globalAlpha = 1.0;
@@ -168,14 +156,14 @@ function renderHomeToAboutTransition(ctx, homeImgUrl, aboutImgUrl, progress, can
   const aboutOriginX = 0.5;
   const aboutOriginY = 0.5;
 
-  // Smooth emergence after chapter loader holds and fades (starts p > 0.50)
+  // Smooth emergence matching the paper-bridge lighting curve
   let aboutAlpha = 0;
-  if (p <= 0.50) {
+  if (p <= 0.08) {
     aboutAlpha = 0;
-  } else if (p >= 0.95) {
+  } else if (p >= 0.78) {
     aboutAlpha = 1.0;
   } else {
-    const t = (p - 0.50) / 0.45;
+    const t = (p - 0.08) / 0.70;
     aboutAlpha = t * t * (3 - 2 * t);
   }
 
@@ -270,16 +258,53 @@ export const CinematicJourney = ({ children }) => {
       frames.forEach((url) => preloadImage(url));
     });
 
+    // Section Entry Cross-Dissolve Helper
+    const renderCrossDissolve = (outgoingUrl, incomingUrl, blendProgress, width, height) => {
+      const outImg = globalImageCache.get(outgoingUrl);
+      const inImg = globalImageCache.get(incomingUrl);
+      const p = Math.max(0, Math.min(1, blendProgress));
+      const alpha = p * p * (3 - 2 * p);
+
+      ctx.clearRect(0, 0, width, height);
+      if (outImg && outImg.complete) {
+        drawSingleCover(ctx, outImg, width, height, 1.0, 1.0, 0.5, 0.5);
+      }
+      if (inImg && inImg.complete && alpha > 0) {
+        drawSingleCover(ctx, inImg, width, height, alpha, 1.0, 0.5, 0.5);
+      }
+      ctx.globalAlpha = 1.0;
+    };
+
     // Render helper
     const renderFrame = (activeFrames, virtualProgress, section = 'home', force = false) => {
       if (!activeFrames || !activeFrames.length) return;
-      const key = `${activeFrames[0]}_${virtualProgress.toFixed(3)}`;
+      const key = `${section}_${activeFrames[0]}_${virtualProgress.toFixed(3)}`;
       if (!force && key === lastRenderedKeyRef.current) return;
       lastRenderedKeyRef.current = key;
 
       const { width, height } = canvasDimsRef.current;
       if (width > 0 && height > 0) {
-        drawInterpolatedFrames(ctx, activeFrames, virtualProgress, width, height, section);
+        const total = activeFrames.length;
+        const phaseProgress = total > 1 ? virtualProgress / (total - 1) : 0;
+
+        if (section === 'about' && phaseProgress < 0.20) {
+          const homeFrames = getFrames('home');
+          const outgoingUrl = homeFrames[homeFrames.length - 1];
+          const incomingUrl = activeFrames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
+        } else if (section === 'therapy' && phaseProgress < 0.20) {
+          const aboutFrames = getFrames('about');
+          const outgoingUrl = aboutFrames[aboutFrames.length - 1];
+          const incomingUrl = activeFrames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
+        } else if (section === 'recovery' && phaseProgress < 0.20) {
+          const therapyFrames = getFrames('therapy');
+          const outgoingUrl = therapyFrames[therapyFrames.length - 1];
+          const incomingUrl = activeFrames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
+        } else {
+          drawInterpolatedFrames(ctx, activeFrames, virtualProgress, width, height, section === 'home');
+        }
       }
     };
 
@@ -359,33 +384,83 @@ export const CinematicJourney = ({ children }) => {
               overlayEls.forEach((el) => {
                 const sec = el.getAttribute('data-section');
                 if (sec === activePhase.section) {
-                  // Fade out overlay near end of section sequence (except About, which stays solid for cumulative hold)
-                  const fadeOut = (sec === 'about' || phaseProgress <= 0.82) ? 1.0 : (1 - phaseProgress) / 0.18;
-                  // Fade in overlay at start of section sequence (first 15%)
-                  // Home and About sections are already visible from initial load or prior transition bridge
-                  const fadeIn = (sec === 'home' || sec === 'about' || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
+                  // Fade out overlay near end of section sequence (last 18%) - except About, Therapy, Recovery which remain visible until transition
+                  const isPersistentOverlay = sec === 'about' || sec === 'therapy' || sec === 'recovery';
+                  const fadeOut = isPersistentOverlay ? 1.0 : (phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0);
+                  // Fade in overlay at start of section sequence
+                  // Home, About, Therapy, Recovery overlays are visible from initial section entry
+                  const fadeIn = (sec === 'home' || isPersistentOverlay || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
                   const op = Math.max(0, Math.min(1, Math.min(fadeIn, fadeOut)));
                   el.style.opacity = op.toFixed(2);
                   el.style.visibility = op > 0 ? 'visible' : 'hidden';
                   el.style.pointerEvents = op > 0.5 ? 'auto' : 'none';
 
-                  // Directly drive About UI progress from master journey progress
-                  if (sec === 'about') {
-                    const aboutEl = el.querySelector('#about');
-                    if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                      aboutEl.updateAboutProgress(phaseProgress);
-                    }
-                  }
-                } else {
-                  el.style.opacity = '0';
-                  el.style.visibility = 'hidden';
-                  el.style.pointerEvents = 'none';
+                  // Directly drive Section UI progress from master journey progress & frame indices
+                  const secFrames = getFrames(sec);
+                  const secVirtualVal = phaseProgress * Math.max(1, secFrames.length - 1);
+                  const secPrevFrame = Math.floor(secVirtualVal);
+                  const secCurrFrame = Math.min(secPrevFrame + 1, secFrames.length - 1);
 
                   if (sec === 'about') {
                     const aboutEl = el.querySelector('#about');
                     if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                      const isPast = p > activePhase.end;
-                      aboutEl.updateAboutProgress(isPast ? 1 : 0);
+                      aboutEl.updateAboutProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+                    }
+                  } else if (sec === 'therapy') {
+                    const therapyEl = el.querySelector('#therapy');
+                    if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
+                      therapyEl.updateTherapyProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+                    }
+                  } else if (sec === 'recovery') {
+                    const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
+                    if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
+                      recoveryEl.updateRecoveryProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+                    }
+                  }
+                } else {
+                  // Home Photo 4 -> Photo 5 transition trigger:
+                  // Photo 4 (index 3) finishes completely at virtualVal = 3.0.
+                  // Photo 5 (index 4) STARTS IMMEDIATELY at virtualVal >= 3.0 (previousFrame === 3 && currentFrame === 4).
+                  // AT THE EXACT MOMENT PHOTO 5 STARTS: Start the About Loader with a smooth fade-in over Photo 5.
+                  const previousFrame = Math.floor(virtualVal);
+                  const currentFrame = Math.min(previousFrame + 1, frames.length - 1);
+                  const isPhoto5Starting = (previousFrame === 3 && currentFrame === 4) || virtualVal >= 3.0;
+
+                  if (sec === 'about' && activePhase.section === 'home' && isPhoto5Starting) {
+                    const progressInPhoto5 = Math.max(0, Math.min(1, (virtualVal - 3.0) / 0.35));
+                    const loaderFadeIn = progressInPhoto5 * progressInPhoto5 * (3 - 2 * progressInPhoto5); // smooth cubic fade-in
+                    const op = Math.max(0.05, loaderFadeIn);
+                    el.style.opacity = op.toFixed(2);
+                    el.style.visibility = 'visible';
+                    el.style.pointerEvents = 'auto';
+
+                    const aboutEl = el.querySelector('#about');
+                    if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
+                      aboutEl.updateAboutProgress(0);
+                    }
+                  } else {
+                    el.style.opacity = '0';
+                    el.style.visibility = 'hidden';
+                    el.style.pointerEvents = 'none';
+
+                    if (sec === 'about') {
+                      const aboutEl = el.querySelector('#about');
+                      if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
+                        const isPast = p > activePhase.end;
+                        aboutEl.updateAboutProgress(isPast ? 1 : 0);
+                      }
+                    } else if (sec === 'therapy') {
+                      const therapyEl = el.querySelector('#therapy');
+                      if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
+                        const isPast = p > activePhase.end;
+                        therapyEl.updateTherapyProgress(isPast ? 1 : 0);
+                      }
+                    } else if (sec === 'recovery') {
+                      const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
+                      if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
+                        const isPast = p > activePhase.end;
+                        recoveryEl.updateRecoveryProgress(isPast ? 1 : 0);
+                      }
                     }
                   }
                 }
@@ -393,87 +468,6 @@ export const CinematicJourney = ({ children }) => {
             }
           }
 
-          // 2. Handle Bridge / Transition Rendering
-          if (activePhase.type === 'transition') {
-            const bridgeProgress = Math.max(0, Math.min(1, (p - activePhase.start) / activePhase.duration));
-            const tKey = activePhase.transitionKey;
-
-            if (tKey === 'homeToAbout') {
-              const homeFrames = getFrames('home');
-              const aboutFrames = getFrames('about');
-              const { width, height } = canvasDimsRef.current;
-              if (width > 0 && height > 0 && homeFrames.length && aboutFrames.length) {
-                renderHomeToAboutTransition(
-                  ctx,
-                  homeFrames[homeFrames.length - 1], // Photo 4 (final frame of 4-photo sequence)
-                  aboutFrames[0],
-                  bridgeProgress,
-                  width,
-                  height
-                );
-                lastRenderedKeyRef.current = `trans_homeToAbout_${bridgeProgress.toFixed(3)}`;
-              }
-            }
-
-            setTransitionStates((prev) => {
-              return {
-                ...prev,
-                [tKey]: { progress: bridgeProgress, isActive: true }
-              };
-            });
-
-            // Hide irrelevant section overlays during active bridge, but fade in incoming About overlay after chapter loader completes
-            if (overlaysContainer) {
-              const overlayEls = overlaysContainer.querySelectorAll('.cinematic-section-overlay');
-              overlayEls.forEach((el) => {
-                const sec = el.getAttribute('data-section');
-                if (tKey === 'homeToAbout' && sec === 'about') {
-                  const aboutOp = bridgeProgress > 0.60 ? Math.min(1, (bridgeProgress - 0.60) / 0.35) : 0;
-                  el.style.opacity = aboutOp.toFixed(2);
-                  el.style.visibility = aboutOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = aboutOp > 0.5 ? 'auto' : 'none';
-                } else if (tKey === 'aboutToTherapy' && sec === 'about') {
-                  const aboutOp = Math.max(0, 1 - bridgeProgress);
-                  el.style.opacity = aboutOp.toFixed(2);
-                  el.style.visibility = aboutOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = aboutOp > 0.5 ? 'auto' : 'none';
-                } else if (tKey === 'aboutToTherapy' && sec === 'therapy') {
-                  const therapyOp = bridgeProgress > 0.40 ? Math.min(1, (bridgeProgress - 0.40) / 0.60) : 0;
-                  el.style.opacity = therapyOp.toFixed(2);
-                  el.style.visibility = therapyOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = therapyOp > 0.5 ? 'auto' : 'none';
-                } else if (tKey === 'therapyToRecovery' && sec === 'therapy') {
-                  const therapyOp = Math.max(0, 1 - bridgeProgress);
-                  el.style.opacity = therapyOp.toFixed(2);
-                  el.style.visibility = therapyOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = therapyOp > 0.5 ? 'auto' : 'none';
-                } else if (tKey === 'therapyToRecovery' && sec === 'recovery') {
-                  const recoveryOp = bridgeProgress > 0.40 ? Math.min(1, (bridgeProgress - 0.40) / 0.60) : 0;
-                  el.style.opacity = recoveryOp.toFixed(2);
-                  el.style.visibility = recoveryOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = recoveryOp > 0.5 ? 'auto' : 'none';
-                } else if (tKey === 'recoveryToCTA' && sec === 'recovery') {
-                  const recoveryOp = Math.max(0, 1 - bridgeProgress);
-                  el.style.opacity = recoveryOp.toFixed(2);
-                  el.style.visibility = recoveryOp > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = recoveryOp > 0.5 ? 'auto' : 'none';
-                } else {
-                  el.style.opacity = '0';
-                  el.style.visibility = 'hidden';
-                  el.style.pointerEvents = 'none';
-                }
-              });
-
-              const aboutEl = overlaysContainer.querySelector('#about');
-              if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                if (tKey === 'homeToAbout') {
-                  aboutEl.updateAboutProgress(0);
-                } else if (tKey === 'aboutToTherapy') {
-                  aboutEl.updateAboutProgress(1);
-                }
-              }
-            }
-          }
         }
       });
 

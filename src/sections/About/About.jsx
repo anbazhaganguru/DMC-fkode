@@ -1,208 +1,151 @@
 import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
 import './About.css';
 
 export const About = () => {
   const containerRef = useRef(null);
-  const stage1Ref = useRef(null);
-  const stage2Ref = useRef(null);
-  const bottomBarRef = useRef(null);
+  const loaderRef = useRef(null);
+  const contentWrapperRef = useRef(null);
+  const firstHalfRef = useRef(null);
+  const secondHalfRef = useRef(null);
+  const stateRef = useRef({ stage: 'initial' });
 
   useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.set(loaderRef.current, { opacity: 1, y: 0, visibility: 'visible' });
+      gsap.set(contentWrapperRef.current, { opacity: 0, visibility: 'hidden' });
+      gsap.set(firstHalfRef.current, { opacity: 0, y: 24 });
+      gsap.set(secondHalfRef.current, { opacity: 0, y: 24, pointerEvents: 'none' });
+    }, containerRef);
+
+    /**
+     * Master Scroll Synchronizer for About Section
+     * Driven directly by CinematicJourney's master progress & frame transition state using GSAP.
+     */
+    const updateAboutProgress = (rawP, rawVirtualVal, prevFrame, currFrame) => {
+      const p = Math.max(0, Math.min(1, rawP));
+      const v = rawVirtualVal !== undefined ? rawVirtualVal : p;
+      const currentState = stateRef.current;
+
+      const loader = loaderRef.current;
+      const contentWrapper = contentWrapperRef.current;
+      const firstHalf = firstHalfRef.current;
+      const secondHalf = secondHalfRef.current;
+
+      if (!loader || !contentWrapper || !firstHalf || !secondHalf) return;
+
+      // Stage 0: Initial / Home Photo 5 (About Loader active & visible)
+      if (p <= 0.0) {
+        if (currentState.stage !== 'loader') {
+          currentState.stage = 'loader';
+          ctx.add(() => {
+            gsap.to(loader, { opacity: 1, y: 0, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
+            gsap.to(contentWrapper, { opacity: 0, duration: 0.3, visibility: 'hidden', ease: 'power2.out' });
+            gsap.to(firstHalf, { opacity: 0, y: 24, duration: 0.3, ease: 'power2.out' });
+            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out' });
+          });
+        }
+      }
+      // Stage 1: About Photo 1 STARTS (p > 0.0 && v < 0.50)
+      else if (v < 0.50) {
+        if (currentState.stage !== 'photo1') {
+          currentState.stage = 'photo1';
+          ctx.add(() => {
+            gsap.to(loader, { opacity: 0, y: -12, duration: 0.5, visibility: 'hidden', ease: 'power2.out' });
+            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
+            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
+            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out' });
+          });
+        }
+      }
+      // Stage 2: About Photo 2 STARTS (v >= 0.50) - BOTH First and Second half content remain 100% visible!
+      else {
+        if (currentState.stage !== 'photo2') {
+          currentState.stage = 'photo2';
+          ctx.add(() => {
+            gsap.to(loader, { opacity: 0, y: -12, duration: 0.3, visibility: 'hidden', ease: 'power2.out' });
+            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
+            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+            gsap.to(secondHalf, { opacity: 1, y: 0, duration: 0.8, pointerEvents: 'auto', ease: 'power2.out' });
+          });
+        }
+      }
+    };
+
     const container = containerRef.current;
-    if (!container) return;
-
-    // Initialize initial hidden states immediately on mount with display: none
-    if (stage1Ref.current) {
-      stage1Ref.current.style.display = 'none';
-      stage1Ref.current.style.opacity = '0';
-      stage1Ref.current.style.visibility = 'hidden';
-      stage1Ref.current.style.pointerEvents = 'none';
-    }
-    if (stage2Ref.current) {
-      stage2Ref.current.style.display = 'none';
-      stage2Ref.current.style.opacity = '0';
-      stage2Ref.current.style.visibility = 'hidden';
-      stage2Ref.current.style.pointerEvents = 'none';
-    }
-    if (bottomBarRef.current) {
-      bottomBarRef.current.style.display = 'none';
-      bottomBarRef.current.style.opacity = '0';
-      bottomBarRef.current.style.visibility = 'hidden';
+    if (container) {
+      container.updateAboutProgress = updateAboutProgress;
     }
 
-    // Direct performance-optimized callback attached to DOM node for master CinematicJourney
-    container.updateAboutProgress = (progress) => {
-      const p = Math.max(0, Math.min(1, progress));
-      const stage1 = stage1Ref.current;
-      const stage2 = stage2Ref.current;
-      const bottomBar = bottomBarRef.current;
+    updateAboutProgress(0, 0, 0, 0);
 
-      // STAGE 1 (Photo 1 - 02_about_wellness_reveal.webp):
-      // Physical display:none isolation during Loader and Photo 1 entry (p <= 0.12).
-      // Zero rendering, zero ghost text.
-      // Reveals only when user performs scroll interaction inside About (0.12 -> 0.35).
-      if (stage1) {
-        const children = stage1.children;
-        if (p <= 0.12) {
-          stage1.style.display = 'none';
-          stage1.style.opacity = '0';
-          stage1.style.visibility = 'hidden';
-          stage1.style.pointerEvents = 'none';
-          if (children) {
-            for (let i = 0; i < children.length; i++) {
-              children[i].style.opacity = '0';
-              children[i].style.transform = 'translateY(20px)';
-            }
-          }
-        } else if (p >= 0.35) {
-          stage1.style.display = 'flex';
-          stage1.style.opacity = '1';
-          stage1.style.visibility = 'visible';
-          stage1.style.pointerEvents = 'auto';
-          if (children) {
-            for (let i = 0; i < children.length; i++) {
-              children[i].style.opacity = '1';
-              children[i].style.transform = 'translateY(0px)';
-            }
-          }
-        } else {
-          stage1.style.display = 'flex';
-          stage1.style.visibility = 'visible';
-          stage1.style.opacity = '1';
-          stage1.style.pointerEvents = 'auto';
-          if (children) {
-            // Stagger offsets: Eyebrow (0.12), Headline (0.16), Paragraph (0.20)
-            const delays = [0.12, 0.16, 0.20];
-            const duration = 0.15;
-            for (let i = 0; i < children.length; i++) {
-              const delay = delays[i] || 0.12;
-              let childOp = 0;
-              let childY = 20;
-              if (p > delay) {
-                const t = Math.min(1, (p - delay) / duration);
-                childOp = t * t * (3 - 2 * t);
-                childY = 20 * (1 - t);
-              }
-              children[i].style.opacity = childOp.toFixed(3);
-              children[i].style.transform = `translateY(${childY.toFixed(1)}px)`;
-            }
-          }
-        }
+    return () => {
+      if (container) {
+        delete container.updateAboutProgress;
       }
-
-      // STAGE 2 (Photo 2 - 05_about_treatment_doorway.webp):
-      // Secondary Quote & CTAs emerge ONLY when p > 0.45 (Photo 2 stage)
-      // and REMAIN 100% VISIBLE continuously through Photo 2's final frame and hold.
-      if (stage2) {
-        if (p <= 0.45) {
-          stage2.style.display = 'none';
-          stage2.style.opacity = '0';
-          stage2.style.visibility = 'hidden';
-          stage2.style.pointerEvents = 'none';
-        } else if (p >= 0.75) {
-          stage2.style.display = 'flex';
-          stage2.style.opacity = '1';
-          stage2.style.visibility = 'visible';
-          stage2.style.pointerEvents = 'auto';
-          stage2.style.transform = 'translateY(0px)';
-        } else {
-          stage2.style.display = 'flex';
-          stage2.style.visibility = 'visible';
-          stage2.style.pointerEvents = 'auto';
-          const t = (p - 0.45) / 0.30;
-          const s2Op = t * t * (3 - 2 * t);
-          const s2Y = 20 * (1 - t);
-          stage2.style.opacity = s2Op.toFixed(3);
-          stage2.style.transform = `translateY(${s2Y.toFixed(1)}px)`;
-        }
-      }
-
-      // BOTTOM MICRO LABEL:
-      // Fades in softly alongside Stage 2 (0.50 -> 0.78) and REMAINS 100% VISIBLE.
-      if (bottomBar) {
-        if (p <= 0.50) {
-          bottomBar.style.display = 'none';
-          bottomBar.style.opacity = '0';
-          bottomBar.style.visibility = 'hidden';
-        } else if (p >= 0.78) {
-          bottomBar.style.display = 'flex';
-          bottomBar.style.opacity = '1';
-          bottomBar.style.visibility = 'visible';
-        } else {
-          bottomBar.style.display = 'flex';
-          bottomBar.style.visibility = 'visible';
-          const t = (p - 0.50) / 0.28;
-          const barOp = t * t * (3 - 2 * t);
-          bottomBar.style.opacity = barOp.toFixed(3);
-        }
-      }
+      ctx.revert();
     };
   }, []);
 
   return (
-    <div id="about" ref={containerRef} className="about-section">
-      {/* Cinematic Right Fade Atmosphere Layer */}
+    <div id="about" ref={containerRef} className="about-cinematic-stage">
+      {/* Soft Multi-Layered Feathered Ivory Atmosphere Overlay */}
       <div className="about-atmosphere" aria-hidden="true">
-        <div className="about-atmosphere__right" />
-        <div className="about-atmosphere__top" />
+        <div className="about-fade-overlay" />
       </div>
 
-      {/* Main Foreground Content Container */}
-      <div className="about-container">
-        <div className="about-main-group">
-          
-          {/* STAGE 1 CONTENT: Revealed ONLY on Photo 1 (02_about_wellness_reveal) */}
-          <div
-            ref={stage1Ref}
-            className="about-stage-group about-stage-group--1"
-            style={{ display: 'none', opacity: 0, visibility: 'hidden', pointerEvents: 'none' }}
-          >
-            {/* BLOCK 01: Eyebrow Tag Group */}
-            <div className="about-block about-block--eyebrow">
-              <div className="about-eyebrow">
-                <span className="about-eyebrow__dot" />
-                <span className="about-eyebrow__text">DANIEL WELLNESS CENTER</span>
-              </div>
+      {/* 1. Centered Editorial Chapter Loader */}
+      <div ref={loaderRef} className="about-loader" aria-label="Chapter 01 Loader">
+        <div className="about-loader__content">
+          <div className="about-loader__line about-loader__line--top" />
+          <span className="about-loader__number">01</span>
+          <h2 className="about-loader__title">ABOUT</h2>
+          <span className="about-loader__subtitle">A PERSONALIZED WELLNESS JOURNEY</span>
+          <div className="about-loader__line about-loader__line--bottom" />
+        </div>
+      </div>
+
+      {/* 2. Main Right-Aligned Editorial Content Container */}
+      <div ref={contentWrapperRef} className="about-editorial-container">
+        <div className="about-editorial-inner">
+          {/* First-Half Content Group */}
+          <div ref={firstHalfRef} className="about-content-group about-content-group--first">
+            {/* Eyebrow Chapter Tag */}
+            <div className="about-eyebrow">
+              <span className="about-eyebrow__dot" aria-hidden="true" />
+              <span className="about-eyebrow__number">01</span>
+              <span className="about-eyebrow__divider">/</span>
+              <span className="about-eyebrow__text">ABOUT</span>
             </div>
 
-            {/* BLOCK 02: Main Heading */}
-            <div className="about-block about-block--headline">
-              <h2 className="about-headline">
-                <span className="about-headline__line about-headline__line--roman">
-                  A More Personalized
-                </span>
-                <span className="about-headline__line about-headline__line--italic">
-                  Approach to Wellness.
-                </span>
-              </h2>
-            </div>
+            {/* Main Headline */}
+            <h2 className="about-headline">
+              <span className="about-headline__line">A More Personalized</span>
+              <span className="about-headline__line about-headline__line--italic">
+                Approach to Wellness.
+              </span>
+            </h2>
 
-            {/* Supporting Paragraph */}
-            <p className="about-paragraph">
+            {/* First Supporting Paragraph */}
+            <p className="about-paragraph about-paragraph--first">
               Every individual has different needs, which is why we encourage a personalized approach when choosing a wellness experience.
             </p>
           </div>
 
-          {/* STAGE 2 CONTENT: Revealed Cumulatively ONLY on Photo 2 (05_about_treatment_doorway) */}
-          <div
-            ref={stage2Ref}
-            className="about-stage-group about-stage-group--2"
-            style={{ display: 'none', opacity: 0, visibility: 'hidden', pointerEvents: 'none' }}
-          >
-            {/* Secondary Supporting Statement with Sage Border */}
-            <div className="about-quote">
-              <p className="about-quote__text">
-                At Daniel Wellness Center, our services are designed around relaxation, recovery support, body comfort, and overall well-being.
-              </p>
-            </div>
+          {/* Second-Half Content Group */}
+          <div ref={secondHalfRef} className="about-content-group about-content-group--second">
+            {/* Second Supporting Paragraph */}
+            <p className="about-paragraph about-paragraph--second">
+              At Daniel Wellness Center, our services are designed around relaxation, recovery support, body comfort, and overall well-being.
+            </p>
 
             {/* Action CTAs */}
             <div className="about-ctas">
               <a href="#cta" className="about-btn-primary">
                 <span className="about-btn-primary__label">BOOK AN APPOINTMENT</span>
                 <svg
-                  width="14"
-                  height="14"
+                  width="16"
+                  height="16"
                   viewBox="0 0 16 16"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -211,7 +154,7 @@ export const About = () => {
                 >
                   <path
                     d="M9 3L14 8M14 8L9 13M14 8H2"
-                    stroke="currentColor"
+                    stroke="#FDFCFA"
                     strokeWidth="1.33333"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -220,40 +163,16 @@ export const About = () => {
               </a>
 
               <a href="#therapy" className="about-btn-secondary">
-                <span className="about-btn-secondary__label">EXPLORE WELLNESS SERVICES</span>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="about-btn-secondary__arrow"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M9 3L14 8M14 8L9 13M14 8H2"
-                    stroke="currentColor"
-                    strokeWidth="1.33333"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                EXPLORE WELLNESS SERVICES
               </a>
             </div>
+
+            {/* Bottom Micro Label */}
+            <div className="about-micro-footer">
+              <span className="about-micro-dash">—</span>
+              <span className="about-micro-label">PERSONALIZED WELLNESS JOURNEY</span>
+            </div>
           </div>
-
-        </div>
-      </div>
-
-      {/* Bottom Right Micro Label */}
-      <div
-        ref={bottomBarRef}
-        className="about-bottom-bar"
-        style={{ opacity: 0, visibility: 'hidden' }}
-      >
-        <div className="about-bottom-bar__left">
-          <span className="about-bottom-bar__divider" />
-          <span className="about-bottom-bar__label">PERSONALIZED WELLNESS JOURNEY</span>
         </div>
       </div>
     </div>
@@ -261,3 +180,4 @@ export const About = () => {
 };
 
 export default About;
+

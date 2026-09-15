@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Cinematic Therapy Section CSS — Daniel Wellness Center (DWC)
+   2-Photo Sequence (01 Photo 1 -> 02 Photo 2 + Cards Reveal)
+   Editorial Chapter Loader (02 THERAPY) + Clean Cards Layout
+   ========================================================================== */
+
+.therapy-cinematic-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Atmosphere Overlay
+   ========================================================================== */
+.therapy-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.therapy-fade-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 70% at 50% 50%,
+      rgba(253, 252, 250, 0.88) 0%,
+      rgba(253, 252, 250, 0.60) 60%,
+      rgba(253, 252, 250, 0.25) 100%
+    );
+}
+
+/* ==========================================================================
+   1. Centered Editorial Chapter Loader (02 THERAPY)
+   ========================================================================== */
+.therapy-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.therapy-loader__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 48px;
+  position: relative;
+}
+
+.therapy-loader__line {
+  width: 140px;
+  height: 1px;
+  background: rgba(30, 37, 34, 0.18);
+}
+
+.therapy-loader__line--top {
+  margin-bottom: 24px;
+}
+
+.therapy-loader__line--bottom {
+  margin-top: 24px;
+}
+
+.therapy-loader__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #7AAFA2;
+  margin-bottom: 8px;
+}
+
+.therapy-loader__title {
+  font-family: var(--font-serif);
+  font-size: clamp(64px, 7vw, 96px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: 0.08em;
+  color: #1E2522;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+}
+
+.therapy-loader__subtitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  color: #55605A;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   2. Main Therapy Cards Container
+   ========================================================================== */
+.therapy-editorial-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 60px;
+  z-index: 3;
+  pointer-events: auto;
+  will-change: opacity, transform;
+}
+
+.therapy-editorial-inner {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.therapy-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.therapy-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.therapy-eyebrow__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7AAFA2;
+  flex-shrink: 0;
+}
+
+.therapy-eyebrow__number {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: #7AAFA2;
+}
+
+.therapy-eyebrow__divider {
+  font-size: 11px;
+  color: rgba(30, 37, 34, 0.3);
+}
+
+.therapy-eyebrow__text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  color: #55605A;
+  text-transform: uppercase;
+}
+
+.therapy-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 3.0vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #1E2522;
+  margin: 0;
+  font-weight: 300;
+}
+
+.therapy-headline--italic {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* 6 Cards Grid */
+.therapy-cards-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.therapy-card {
+  background: #FAF7F2;
+  border: 1px solid rgba(30, 37, 34, 0.10);
+  border-radius: 16px;
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px rgba(30, 37, 34, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.therapy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(30, 37, 34, 0.08);
+}
+
+.therapy-card__category {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  color: #7AAFA2;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.therapy-card__title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #1E2522;
+  margin: 0 0 8px 0;
+}
+
+.therapy-card__description {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #55605A;
+  margin: 0;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .therapy-editorial-container {
+    padding: 60px 40px;
+  }
+
+  .therapy-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .therapy-loader__title {
+    font-size: 56px;
+  }
+
+  .therapy-loader__subtitle {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+  }
+
+  .therapy-editorial-container {
+    padding: 40px 20px;
+  }
+
+  .therapy-headline {
+    font-size: 26px;
+  }
+
+  .therapy-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .therapy-card {
+    padding: 18px 20px;
+  }
+
+  .therapy-card__title {
+    font-size: 18px;
+  }
+
+  .therapy-card__description {
+    font-size: 12.5px;
+  }
+}

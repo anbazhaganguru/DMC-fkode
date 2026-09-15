@@ -19,8 +19,8 @@ export const transitionsConfig = {
     id: 'home-to-about',
     type: 'notepad',
     fromImage: {
-      desktop: cinematicImages.home.desktop[3], // 04_home_notepad_reveal (Photo 4)
-      mobile: cinematicImages.home.mobile[3]
+      desktop: cinematicImages.home.desktop[4], // 05_home_notepad_closeup
+      mobile: cinematicImages.home.mobile[4]
     },
     toImage: {
       desktop: cinematicImages.about.desktop[0], // 02_about_wellness_reveal
@@ -45,7 +45,7 @@ export const transitionsConfig = {
       mobile: cinematicImages.therapy.mobile[0]
     },
     origin: '50% 48%',
-    fromScale: [1.05, 1.48],
+    fromScale: [1.0, 1.48],
     toScale: [0.90, 1.0],
     overlayType: 'doorway-depth',
     description: 'Corridor doorway depth transition into the therapy lab.'
@@ -55,8 +55,8 @@ export const transitionsConfig = {
     id: 'therapy-to-recovery',
     type: 'light-exposure',
     fromImage: {
-      desktop: cinematicImages.therapy.desktop[4], // 05_therapy_card_environment
-      mobile: cinematicImages.therapy.mobile[4]
+      desktop: cinematicImages.therapy.desktop[1], // 02_therapy_lab_wide
+      mobile: cinematicImages.therapy.mobile[1]
     },
     toImage: {
       desktop: cinematicImages.recovery.desktop[0], // 01_recovery_treatment_exit
@@ -73,8 +73,8 @@ export const transitionsConfig = {
     id: 'recovery-to-cta',
     type: 'window-light',
     fromImage: {
-      desktop: cinematicImages.recovery.desktop[4], // 05_recovery_bright_lounge
-      mobile: cinematicImages.recovery.mobile[4]
+      desktop: cinematicImages.recovery.desktop[1], // 02_recovery_lounge_wide
+      mobile: cinematicImages.recovery.mobile[1]
     },
     toImage: {
       desktop: staticImages.cta.desktop, // cta_wellness_lounge
@@ -89,17 +89,12 @@ export const transitionsConfig = {
 };
 
 // Phase Weights Configuration for Journey Progress Partitioning
-// Sequences have weight 1.0 (or 1.15 for therapy with cards)
-// Bridges have weight 0.55 (~280px of natural scroll)
+// Clean continuous sequence: Home (1.0) -> About (1.0) -> Therapy (1.0) -> Recovery (1.0)
 export const PHASE_WEIGHTS = [
-  { id: 'home', type: 'sequence', weight: 0.60, section: 'home' },
-  { id: 'trans-home-about', type: 'transition', weight: 0.18, transitionKey: 'homeToAbout' },
-  { id: 'about', type: 'sequence', weight: 1.25, section: 'about' },
-  { id: 'trans-about-therapy', type: 'transition', weight: 0.55, transitionKey: 'aboutToTherapy' },
-  { id: 'therapy', type: 'sequence', weight: 1.15, section: 'therapy' },
-  { id: 'trans-therapy-recovery', type: 'transition', weight: 0.55, transitionKey: 'therapyToRecovery' },
-  { id: 'recovery', type: 'sequence', weight: 1.0, section: 'recovery' },
-  { id: 'trans-recovery-cta', type: 'transition', weight: 0.55, transitionKey: 'recoveryToCTA' }
+  { id: 'home', type: 'sequence', weight: 1.0, section: 'home' },
+  { id: 'about', type: 'sequence', weight: 1.0, section: 'about' },
+  { id: 'therapy', type: 'sequence', weight: 1.0, section: 'therapy' },
+  { id: 'recovery', type: 'sequence', weight: 1.0, section: 'recovery' }
 ];
 
 const totalWeight = PHASE_WEIGHTS.reduce((acc, p) => acc + p.weight, 0);
