@@ -39,10 +39,10 @@ export const About = () => {
         if (currentState.stage !== 'loader') {
           currentState.stage = 'loader';
           ctx.add(() => {
-            gsap.to(loader, { opacity: 1, y: 0, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
-            gsap.to(contentWrapper, { opacity: 0, duration: 0.3, visibility: 'hidden', ease: 'power2.out' });
-            gsap.to(firstHalf, { opacity: 0, y: 24, duration: 0.3, ease: 'power2.out' });
-            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out' });
+            gsap.to(loader, { opacity: 1, y: 0, duration: 0.4, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(contentWrapper, { opacity: 0, duration: 0.3, visibility: 'hidden', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(firstHalf, { opacity: 0, y: 24, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out', overwrite: 'auto' });
           });
         }
       }
@@ -51,10 +51,10 @@ export const About = () => {
         if (currentState.stage !== 'photo1') {
           currentState.stage = 'photo1';
           ctx.add(() => {
-            gsap.to(loader, { opacity: 0, y: -12, duration: 0.5, visibility: 'hidden', ease: 'power2.out' });
-            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
-            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
-            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out' });
+            gsap.to(loader, { opacity: 0, y: -12, duration: 0.5, visibility: 'hidden', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(secondHalf, { opacity: 0, y: 24, duration: 0.3, pointerEvents: 'none', ease: 'power2.out', overwrite: 'auto' });
           });
         }
       }
@@ -63,10 +63,10 @@ export const About = () => {
         if (currentState.stage !== 'photo2') {
           currentState.stage = 'photo2';
           ctx.add(() => {
-            gsap.to(loader, { opacity: 0, y: -12, duration: 0.3, visibility: 'hidden', ease: 'power2.out' });
-            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out' });
-            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
-            gsap.to(secondHalf, { opacity: 1, y: 0, duration: 0.8, pointerEvents: 'auto', ease: 'power2.out' });
+            gsap.to(loader, { opacity: 0, y: -12, duration: 0.3, visibility: 'hidden', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(contentWrapper, { opacity: 1, duration: 0.4, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(firstHalf, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+            gsap.to(secondHalf, { opacity: 1, y: 0, duration: 0.8, pointerEvents: 'auto', ease: 'power2.out', overwrite: 'auto' });
           });
         }
       }

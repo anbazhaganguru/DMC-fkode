@@ -471,8 +471,9 @@ export const CinematicJourney = ({ children }) => {
         }
       });
 
-      // Render Frame 0 immediately on initialization
+      // Render Frame 0 immediately on initialization & refresh ScrollTrigger
       renderFrame(homeFrames, 0, 'home', true);
+      ScrollTrigger.refresh();
 
       // Anchor links smooth navigation listener
       const handleAnchorClick = (e) => {
