@@ -215,7 +215,7 @@ export const CinematicJourney = ({ children }) => {
     const overlaysContainer = overlaysContainerRef.current;
     if (!container || !canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const mql = window.matchMedia('(max-width: 768px)');
@@ -386,7 +386,13 @@ export const CinematicJourney = ({ children }) => {
                 if (sec === activePhase.section) {
                   // Fade out overlay near end of section sequence (last 18%) - except About, Therapy, Recovery which remain visible until transition
                   const isPersistentOverlay = sec === 'about' || sec === 'therapy' || sec === 'recovery';
-                  const fadeOut = isPersistentOverlay ? 1.0 : (phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0);
+                  let fadeOut = 1.0;
+                  if (!isPersistentOverlay) {
+                    fadeOut = phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0;
+                  } else if (sec === 'about' && phaseProgress >= 0.85) {
+                    // Continuous cinematic cross-fade: About content smoothly fades out
+                    fadeOut = phaseProgress >= 0.96 ? 0.0 : Math.max(0, 1.0 - (phaseProgress - 0.85) / (0.96 - 0.85));
+                  }
                   // Fade in overlay at start of section sequence
                   // Home, About, Therapy, Recovery overlays are visible from initial section entry
                   const fadeIn = (sec === 'home' || isPersistentOverlay || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
@@ -438,6 +444,38 @@ export const CinematicJourney = ({ children }) => {
                     if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
                       aboutEl.updateAboutProgress(0);
                     }
+                  } else if (sec === 'therapy' && activePhase.section === 'about' && phaseProgress >= 0.88) {
+                    // Continuous cinematic cross-fade: Therapy Chapter 02 loader emerges
+                    // simultaneously as About content completes its fade-out (no empty gap)
+                    const therapyEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.88) / 0.12));
+                    const smoothAlpha = therapyEmergence * therapyEmergence * (3 - 2 * therapyEmergence);
+                    el.style.opacity = smoothAlpha.toFixed(2);
+                    el.style.visibility = smoothAlpha > 0 ? 'visible' : 'hidden';
+                    el.style.pointerEvents = 'none';
+
+                    const therapyEl = el.querySelector('#therapy');
+                    if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
+                      therapyEl.updateTherapyProgress(0);
+                    }
+                  } else if (sec === 'recovery' && activePhase.section === 'therapy' && phaseProgress >= 0.90) {
+                    // Therapy -> Recovery smooth transition handoff (0.90 -> 1.00)
+                    // Card 06 has completed and settled; gently emerge Recovery Chapter 03 loader
+                    const recoveryEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.90) / 0.10));
+                    const smoothAlpha = recoveryEmergence * recoveryEmergence * (3 - 2 * recoveryEmergence);
+                    el.style.opacity = smoothAlpha.toFixed(2);
+                    el.style.visibility = 'visible';
+                    el.style.pointerEvents = 'none';
+
+                    const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
+                    if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
+                      recoveryEl.updateRecoveryProgress(0, 0, 0, 0);
+                    }
+                  } else if (sec === 'therapy' && activePhase.section === 'recovery' && phaseProgress < 0.10) {
+                    // Subtle reverse-scroll persistence for Therapy as Recovery exits
+                    const therapyExitAlpha = Math.max(0, 1 - phaseProgress / 0.10);
+                    el.style.opacity = (therapyExitAlpha * 0.4).toFixed(2);
+                    el.style.visibility = therapyExitAlpha > 0 ? 'visible' : 'hidden';
+                    el.style.pointerEvents = 'none';
                   } else {
                     el.style.opacity = '0';
                     el.style.visibility = 'hidden';

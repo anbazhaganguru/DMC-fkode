@@ -78,13 +78,7 @@ export const TherapyCard = ({ data, index = 0 }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 1, 0.5, 1] }}
-      className="therapy-3d-perspective-wrapper"
-    >
+    <div className="therapy-3d-perspective-wrapper">
       <motion.article
         ref={cardRef}
         onMouseMove={handleMouseMove}
@@ -283,7 +277,7 @@ export const TherapyCard = ({ data, index = 0 }) => {
         {/* Ambient Outer Card Glow */}
         <div className="therapy-3d-card__ambient-glow" style={{ transform: 'translateZ(-10px)' }} />
       </motion.article>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,0 +1,651 @@
+/* ==========================================================================
+   DWC ContactSection / CTA CSS — Daniel Wellness Center
+   Two-Column Editorial Contact Layout + Elevated Appointment Panel
+   Strict Single Scroll System | Zero Horizontal Overflow
+   ========================================================================== */
+
+.dwc-contact-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  overflow-x: clip;
+  background-color: var(--color-bg, #FDFCFA);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   1. Background & Luxury Wellness Scrim
+   ========================================================================== */
+.dwc-contact-bg-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dwc-contact-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dwc-contact-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Multi-stop soft luxury scrim overlay (bright, serene, Scandinavian) */
+.dwc-contact-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(
+      ellipse 95% 85% at 50% 50%,
+      rgba(253, 252, 250, 0.93) 0%,
+      rgba(250, 247, 242, 0.89) 55%,
+      rgba(245, 240, 232, 0.84) 100%
+    );
+}
+
+/* Deterministic ambient light drift (subtle and calm, no particles) */
+.dwc-contact-ambient-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 9999px;
+  top: 15%;
+  left: 20%;
+  background: radial-gradient(circle, rgba(122, 175, 162, 0.12) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 2;
+  animation: dwcAmbientDrift 16s ease-in-out infinite alternate;
+}
+
+@keyframes dwcAmbientDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate3d(-30px, 20px, 0) scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   2. Main Container & Grid Layout (Desktop Two-Column)
+   ========================================================================== */
+.dwc-contact-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(48px, 6vh, 88px) clamp(24px, 4vw, 56px);
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: clamp(36px, 4.8vw, 68px);
+  align-items: center;
+}
+
+/* ==========================================================================
+   3. Left Side: Editorial Content & Official Contact Information
+   ========================================================================== */
+.dwc-contact-editorial-col {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.dwc-contact-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: clamp(10px, 1.6vh, 16px);
+}
+
+.dwc-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #7AAFA2;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(122, 175, 162, 0.6);
+}
+
+.dwc-eyebrow-text {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  color: #1E2522;
+  text-transform: uppercase;
+}
+
+.dwc-contact-headline {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(34px, 4.0vw, 54px);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: #1E2522;
+  margin: 0 0 clamp(14px, 2vh, 18px) 0;
+}
+
+.dwc-desktop-br {
+  display: inline;
+}
+
+.dwc-contact-philosophy {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(13.5px, 1.05vw, 15px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.6;
+  color: #1E2522;
+  opacity: 0.92;
+  margin: 0 0 clamp(10px, 1.4vh, 14px) 0;
+}
+
+.dwc-contact-description {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(12.5px, 0.95vw, 13.5px);
+  font-weight: 400;
+  line-height: 1.65;
+  color: #55605A;
+  margin: 0 0 clamp(20px, 3vh, 28px) 0;
+}
+
+/* Contact Information Panel */
+.dwc-contact-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(253, 252, 250, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(122, 175, 162, 0.25);
+  border-radius: 18px;
+  padding: clamp(18px, 2.4vw, 24px);
+  box-shadow:
+    0 14px 32px rgba(30, 37, 34, 0.06),
+    0 2px 8px rgba(122, 175, 162, 0.04);
+}
+
+.dwc-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dwc-info-row-split {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 12px;
+  border-top: 1px solid rgba(30, 37, 34, 0.07);
+  border-bottom: 1px solid rgba(30, 37, 34, 0.07);
+  padding: 12px 0;
+}
+
+.dwc-info-item--social {
+  padding-top: 2px;
+}
+
+.dwc-info-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: rgba(122, 175, 162, 0.12);
+  color: #1E2522;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dwc-info-body {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.dwc-info-label {
+  font-family: 'Liberation Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #7AAFA2;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.dwc-info-value,
+.dwc-info-address {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-style: normal;
+  color: #1E2522;
+  line-height: 1.45;
+}
+
+.dwc-info-link {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1E2522;
+  text-decoration: none;
+  line-height: 1.45;
+  transition: color 0.2s ease;
+  word-break: break-all;
+}
+
+.dwc-info-link:hover {
+  color: #7AAFA2;
+}
+
+/* ==========================================================================
+   4. Right Side: Elevated Contact Form Panel
+   ========================================================================== */
+.dwc-contact-form-col {
+  width: 100%;
+}
+
+.dwc-contact-card {
+  position: relative;
+  background: rgba(253, 252, 250, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(122, 175, 162, 0.28);
+  border-radius: 22px;
+  padding: clamp(24px, 3.4vw, 40px);
+  box-shadow:
+    0 24px 56px rgba(30, 37, 34, 0.10),
+    0 4px 16px rgba(122, 175, 162, 0.06);
+  text-align: left;
+}
+
+.dwc-card-header {
+  margin-bottom: clamp(16px, 2.2vh, 22px);
+}
+
+.dwc-card-title {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #1E2522;
+  margin: 0 0 6px 0;
+}
+
+.dwc-card-subtitle {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #55605A;
+  margin: 0;
+}
+
+/* Form layout */
+.dwc-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.8vh, 16px);
+}
+
+.dwc-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dwc-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dwc-field-label {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #1E2522;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dwc-required {
+  color: #7AAFA2;
+  font-weight: 700;
+}
+
+.dwc-optional {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #55605A;
+  opacity: 0.7;
+}
+
+.dwc-field-input,
+.dwc-field-textarea {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid rgba(30, 37, 34, 0.15);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 13px;
+  color: #1E2522;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.dwc-field-input::placeholder,
+.dwc-field-textarea::placeholder {
+  color: rgba(85, 96, 90, 0.5);
+}
+
+.dwc-field-input:focus,
+.dwc-field-textarea:focus {
+  border-color: #7AAFA2;
+  box-shadow: 0 0 0 3px rgba(122, 175, 162, 0.20);
+  background: #FFFFFF;
+}
+
+.dwc-field-textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.5;
+}
+
+/* Wellness Focus Chips (Interactive selection) */
+.dwc-focus-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dwc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(250, 247, 242, 0.9);
+  border: 1px solid rgba(30, 37, 34, 0.12);
+  border-radius: 9999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: all 0.22s ease;
+  user-select: none;
+}
+
+.dwc-chip:hover {
+  background: rgba(245, 240, 232, 0.95);
+  border-color: rgba(122, 175, 162, 0.4);
+}
+
+.dwc-chip--active {
+  background: #1E2522 !important;
+  border-color: #1E2522 !important;
+}
+
+.dwc-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #7AAFA2;
+  flex-shrink: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dwc-chip--active .dwc-chip-dot {
+  background: #7AAFA2;
+  box-shadow: 0 0 6px rgba(122, 175, 162, 0.8);
+  transform: scale(1.15);
+}
+
+.dwc-chip-text {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #1E2522;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.dwc-chip--active .dwc-chip-text {
+  color: #FDFCFA;
+  font-weight: 600;
+}
+
+/* Primary Submit Button */
+.dwc-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #1E2522;
+  color: #FDFCFA;
+  border: none;
+  border-radius: 9999px;
+  padding: 13px 24px;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 6px 20px rgba(30, 37, 34, 0.14);
+}
+
+.dwc-submit-btn:hover {
+  background: #2A3530;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(30, 37, 34, 0.22);
+}
+
+.dwc-btn-arrow {
+  transition: transform 0.22s ease;
+}
+
+.dwc-submit-btn:hover .dwc-btn-arrow {
+  transform: translateX(3px);
+}
+
+/* Inline Graceful Success State */
+.dwc-form-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+  animation: dwcFadeUp 0.35s ease forwards;
+}
+
+@keyframes dwcFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.dwc-success-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background: rgba(122, 175, 162, 0.18);
+  color: #7AAFA2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.dwc-success-title {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: 26px;
+  font-weight: 300;
+  color: #1E2522;
+  margin: 0 0 8px 0;
+}
+
+.dwc-success-desc {
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #55605A;
+  margin: 0 0 20px 0;
+}
+
+.dwc-success-desc strong {
+  color: #1E2522;
+  font-weight: 600;
+}
+
+.dwc-success-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #1E2522;
+  border: 1px solid rgba(30, 37, 34, 0.22);
+  border-radius: 9999px;
+  padding: 9px 20px;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dwc-success-reset-btn:hover {
+  background: #1E2522;
+  color: #FDFCFA;
+  border-color: #1E2522;
+}
+
+/* ==========================================================================
+   5. Responsive Behavior
+   1280x800 & Tablet Optimization
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .dwc-contact-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 60px 24px;
+  }
+
+  .dwc-desktop-br {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   6. Mobile Responsive Behavior (<= 768px)
+   Strict zero horizontal overflow | Naturally expanding section height
+   ========================================================================== */
+@media (max-width: 768px) {
+  .dwc-contact-section {
+    min-height: auto;
+    padding: 48px 0 64px 0;
+    display: block;
+  }
+
+  .dwc-contact-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dwc-contact-headline {
+    font-size: clamp(28px, 7.5vw, 36px);
+  }
+
+  .dwc-contact-philosophy {
+    font-size: 13px;
+  }
+
+  .dwc-contact-description {
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+
+  .dwc-contact-info-panel {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .dwc-info-row-split {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dwc-contact-card {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+
+  .dwc-card-title {
+    font-size: 24px;
+  }
+
+  .dwc-form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dwc-focus-chips {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .dwc-chip {
+    padding: 9px 12px;
+  }
+
+  .dwc-chip-text {
+    font-size: 10px;
+  }
+
+  .dwc-submit-btn {
+    padding: 12px 20px;
+    font-size: 10.5px;
+  }
+}

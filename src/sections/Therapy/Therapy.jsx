@@ -12,100 +12,206 @@ export const Therapy = () => {
   const stateRef = useRef({ stage: 'initial' });
 
   useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+
     const ctx = gsap.context(() => {
       gsap.set(loaderRef.current, { opacity: 0, y: 0, visibility: 'hidden' });
-      gsap.set(contentWrapperRef.current, { opacity: 0, y: 24, visibility: 'hidden', pointerEvents: 'none' });
+      gsap.set(contentWrapperRef.current, { opacity: 0, y: 0, visibility: 'hidden', pointerEvents: 'none' });
+
+      // Initialize card snap items at entrance state
+      if (cardsTrackRef.current) {
+        const snapItems = cardsTrackRef.current.children;
+        gsap.set(snapItems, { opacity: 0, y: 24, scale: 0.97 });
+        gsap.set(cardsTrackRef.current, { x: 0 });
+      }
     }, containerRef);
 
     /**
      * Master Scroll Synchronizer for Therapy Section
-     * Driven directly by CinematicJourney's master progress & frame transition state using GSAP.
-     * On Desktop: Controls section fade-in / stage state.
-     * On Mobile: Translates vertical page scroll progress into horizontal card journey (01 -> 06) with a subtle fade handoff into Recovery.
+     * Driven directly by CinematicJourney's master progress using GSAP.
+     *
+     * Progress Timeline:
+     * 0.00 -> 0.12: STAGE A - Chapter 02 Editorial Loader (02 THERAPY)
+     *               Loader is displayed, then dissolves naturally between 0.08 and 0.12.
+     * 0.12 -> 0.17: STAGE B - Short Breathing Interval (0.12 -> 0.14) & Card 01 Entrance/Settle (0.14 -> 0.17)
+     *               Card 01 is centered, translateX is 0px.
+     * 0.17 -> 0.82: STAGE C - Horizontal Journey (01 -> 02 -> 03 -> 04 -> 05 -> 06)
+     * 0.82 -> 0.90: Therapy Settles (Card 06 resting centered)
+     * 0.90 -> 1.00: Subtle Opacity Transition Handoff to Recovery
      */
     const updateTherapyProgress = (rawP, rawVirtualVal, prevFrame, currFrame) => {
+      const loader = loaderRef.current;
+      const contentWrapper = contentWrapperRef.current;
+      const cardsTrack = cardsTrackRef.current;
+      if (!contentWrapper || !loader) return;
+
+      const snapItems = cardsTrack ? cardsTrack.children : null;
+      const mobile = window.innerWidth <= 768;
+
+      // When before Therapy section (e.g. while in About or reset)
       if (rawP < 0) {
         stateRef.current.stage = 'initial';
-        gsap.set(loaderRef.current, { opacity: 0, y: 0, visibility: 'hidden' });
-        gsap.set(contentWrapperRef.current, { opacity: 0, y: 24, visibility: 'hidden', pointerEvents: 'none' });
-        if (cardsTrackRef.current && window.innerWidth <= 768) {
-          gsap.set(cardsTrackRef.current, { x: 0 });
+        gsap.killTweensOf([loader, contentWrapper]);
+        gsap.set(loader, { opacity: 0, y: 0, visibility: 'hidden' });
+        gsap.set(contentWrapper, { opacity: 0, y: 0, visibility: 'hidden', pointerEvents: 'none' });
+        if (snapItems) {
+          gsap.killTweensOf(snapItems);
+          gsap.set(snapItems, { opacity: 0, y: 24, scale: 0.97 });
+        }
+        if (cardsTrack) {
+          gsap.set(cardsTrack, { x: 0 });
         }
         return;
       }
 
       const p = Math.max(0, Math.min(1, rawP));
-      const v = rawVirtualVal !== undefined ? rawVirtualVal : p;
-      const currentState = stateRef.current;
 
-      const loader = loaderRef.current;
-      const contentWrapper = contentWrapperRef.current;
-
-      if (!loader || !contentWrapper) return;
-
-      // Stage 1: Therapy Photo 1 STARTS (v < 0.45) - Editorial Loader
-      if (v < 0.45) {
-        if (currentState.stage !== 'photo1') {
-          currentState.stage = 'photo1';
-          ctx.add(() => {
-            gsap.to(loader, { opacity: 1, y: 0, duration: 0.5, visibility: 'visible', ease: 'power2.out', overwrite: 'auto' });
-            gsap.to(contentWrapper, { opacity: 0, y: 24, duration: 0.3, visibility: 'hidden', pointerEvents: 'none', ease: 'power2.out', overwrite: 'auto' });
-            if (cardsTrackRef.current && window.innerWidth <= 768) {
-              gsap.set(cardsTrackRef.current, { x: 0 });
-            }
+      // Stage 1 / STAGE A: Chapter 02 Editorial Loader (0.00 <= p < 0.12)
+      if (p < 0.12) {
+        if (stateRef.current.stage !== 'loader') {
+          stateRef.current.stage = 'loader';
+          gsap.killTweensOf([loader, contentWrapper]);
+          if (snapItems) {
+            gsap.killTweensOf(snapItems);
+            gsap.set(snapItems, { opacity: 0, y: 24, scale: 0.97 });
+          }
+          gsap.set(contentWrapper, {
+            opacity: 0,
+            y: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none'
           });
+        }
+
+        // Lock card track at exactly x = 0 throughout the entire loader stage
+        if (cardsTrack) {
+          gsap.set(cardsTrack, { x: 0 });
+        }
+
+        // Smooth dissolve of loader as p approaches 0.12 (0.08 -> 0.12)
+        if (p >= 0.08) {
+          const dissolve = Math.max(0, 1 - (p - 0.08) / 0.04);
+          gsap.set(loader, { opacity: dissolve, y: 0, visibility: dissolve > 0 ? 'visible' : 'hidden' });
+        } else {
+          gsap.set(loader, { opacity: 1, y: 0, visibility: 'visible' });
         }
       }
-      // Stage 2: Therapy Cards Active (v >= 0.45)
-      else {
-        if (currentState.stage !== 'photo2') {
-          currentState.stage = 'photo2';
-          ctx.add(() => {
-            gsap.to(loader, { opacity: 0, y: -12, duration: 0.4, visibility: 'hidden', ease: 'power2.out', overwrite: 'auto' });
-            gsap.to(contentWrapper, { opacity: 1, y: 0, duration: 0.6, visibility: 'visible', pointerEvents: 'auto', ease: 'power2.out', overwrite: 'auto' });
-          });
+      // STAGE B: Card 01 Entrance & Settle (0.12 <= p < 0.17)
+      // Loader has completely finished; Card 01 enters and settles centered; cardsTrack is strictly locked at x = 0
+      else if (p < 0.17) {
+        gsap.set(loader, {
+          opacity: 0,
+          visibility: 'hidden',
+          pointerEvents: 'none'
+        });
+
+        if (cardsTrack) {
+          gsap.set(cardsTrack, { x: 0 });
         }
 
-        // Mobile Vertical-Scroll-Driven Horizontal Card Track Movement & Recovery Handoff Fade
-        if (window.innerWidth <= 768 && cardsTrackRef.current) {
-          // Track movement from v = 0.45 to 0.92 (Card 01 centered to Card 06 centered)
-          const mobileP = Math.max(0, Math.min(1, (v - 0.45) / 0.47));
-          const snapItems = cardsTrackRef.current.children;
+        if (stateRef.current.stage !== 'entrance') {
+          stateRef.current.stage = 'entrance';
+          gsap.killTweensOf([loader, contentWrapper]);
+          gsap.set(contentWrapper, {
+            opacity: 1,
+            y: 0,
+            visibility: 'visible',
+            pointerEvents: 'auto'
+          });
 
-          if (snapItems && snapItems.length >= 6) {
-            const cardWidth = snapItems[0].offsetWidth;
-            const gap = 16; // 16px gap between mobile cards
-            const stepDistance = cardWidth + gap;
-            const maxScroll = stepDistance * 5; // 5 steps to reach Card 06
-            const targetX = -mobileP * maxScroll;
-
-            gsap.to(cardsTrackRef.current, {
-              x: targetX,
-              duration: 0.1,
-              ease: 'none',
-              overwrite: 'auto'
-            });
+          if (snapItems) {
+            gsap.killTweensOf(snapItems);
+            if (mobile) {
+              // Mobile: Card 01 entrance from y: 24, scale: 0.97 to y: 0, scale: 1
+              gsap.fromTo(
+                snapItems[0],
+                { opacity: 0, y: 24, scale: 0.97 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.45,
+                  ease: 'power2.out',
+                  overwrite: 'auto'
+                }
+              );
+              if (snapItems.length > 1) {
+                gsap.set(Array.from(snapItems).slice(1), { opacity: 1, y: 0, scale: 1 });
+              }
+            } else {
+              // Desktop: Controlled GSAP staggered entrance for 3x2 grid
+              gsap.fromTo(
+                snapItems,
+                { opacity: 0, y: 24, scale: 0.97 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.50,
+                  stagger: 0.06,
+                  ease: 'power2.out',
+                  overwrite: 'auto'
+                }
+              );
+            }
           }
-
-          // Subtle fade transition from v = 0.92 to 1.00 as user scrolls into Recovery
-          const fadeOpacity = v > 0.92 ? Math.max(0, 1 - (v - 0.92) / 0.08) : 1;
-          gsap.to(contentWrapper, {
-            opacity: fadeOpacity,
-            duration: 0.1,
-            overwrite: 'auto'
-          });
         }
+      }
+      // STAGE C: Horizontal Card Journey (0.17 <= p <= 0.82) & Settle / Recovery (0.82 < p <= 1.00)
+      else {
+        if (stateRef.current.stage !== 'journey') {
+          stateRef.current.stage = 'journey';
+          gsap.killTweensOf([loader, contentWrapper]);
+          gsap.set(loader, {
+            opacity: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none'
+          });
+          gsap.set(contentWrapper, {
+            opacity: 1,
+            y: 0,
+            visibility: 'visible',
+            pointerEvents: 'auto'
+          });
+
+          if (snapItems) {
+            gsap.set(snapItems, { opacity: 1, y: 0, scale: 1 });
+          }
+        }
+
+        // Mobile Horizontal Card Journey (0.17 -> 0.82) & Settle (0.82 -> 0.90)
+        // Normalized strictly from 0.17 to 0.82: at p = 0.17, cardProgress = 0, mobileX = 0
+        if (mobile && cardsTrack) {
+          const cardProgress = Math.max(0, Math.min(1, (p - 0.17) / (0.82 - 0.17)));
+          const viewportWidth = window.innerWidth;
+          const targetX = -cardProgress * (5 * viewportWidth);
+          gsap.set(cardsTrack, { x: targetX });
+        } else if (cardsTrack) {
+          gsap.set(cardsTrack, { x: 0 });
+        }
+
+        // Settle & Recovery Transition Fade (0.90 -> 1.00)
+        const fadeOpacity = p > 0.90 ? Math.max(0, 1 - (p - 0.90) / 0.10) : 1;
+        gsap.set(contentWrapper, { opacity: fadeOpacity });
       }
     };
+
+    const handleResize = () => {
+      if (cardsTrackRef.current && window.innerWidth > 768) {
+        gsap.set(cardsTrackRef.current, { x: 0 });
+      }
+    };
+    window.addEventListener('resize', handleResize);
 
     const container = containerRef.current;
     if (container) {
       container.updateTherapyProgress = updateTherapyProgress;
     }
 
-    updateTherapyProgress(0, 0, 0, 0);
+    updateTherapyProgress(0);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       if (container) {
         delete container.updateTherapyProgress;
       }
@@ -131,7 +237,7 @@ export const Therapy = () => {
         </div>
       </div>
 
-      {/* 2. Main Therapy Showcase Content (6 Cards UI) */}
+      {/* Main Therapy Showcase Content (6 Cards UI) */}
       <div ref={contentWrapperRef} className="therapy-editorial-container">
         <div className="therapy-editorial-inner">
           <div className="therapy-header">

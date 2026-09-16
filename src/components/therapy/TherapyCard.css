@@ -8,18 +8,28 @@
   display: flex;
 }
 
+.therapy-3d-perspective-wrapper,
+.therapy-3d-card,
+.therapy-3d-card:focus,
+.therapy-3d-card:focus-visible,
+.therapy-3d-card:hover {
+  border: none !important;
+  outline: none !important;
+}
+
 .therapy-3d-card {
   position: relative;
   width: 100%;
   min-width: 0;
   max-width: none;
-  height: clamp(330px, 36vh, 410px);
+  height: clamp(290px, 32vh, 375px);
   border-radius: 20px;
   overflow: hidden;
   background: #111820;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 16px 36px -12px rgba(8, 12, 16, 0.5), 0 0 1px rgba(255, 255, 255, 0.2);
-  transition: box-shadow 0.4s ease, border-color 0.4s ease, background-color 0.4s ease;
+  border: none;
+  outline: none;
+  box-shadow: 0 16px 36px -12px rgba(8, 12, 16, 0.5);
+  transition: box-shadow 0.4s ease, background-color 0.4s ease;
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -30,7 +40,8 @@
 
 /* Hover Elevation & Soft DWC Ambient Glow */
 .therapy-3d-card--hovered {
-  border-color: rgba(122, 175, 162, 0.55);
+  border: none;
+  outline: none;
   box-shadow: 0 24px 50px -10px rgba(6, 10, 14, 0.75), 0 0 28px rgba(122, 175, 162, 0.25);
 }
 
@@ -137,16 +148,16 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(12, 17, 22, 0.40) 0%,
-    rgba(10, 15, 20, 0.75) 45%,
-    rgba(8, 12, 16, 0.95) 100%
+    rgba(12, 17, 22, 0.04) 0%,
+    rgba(10, 15, 20, 0.18) 45%,
+    rgba(8, 12, 16, 0.55) 100%
   );
 }
 
 .therapy-3d-card__gradient-vignette {
   position: absolute;
   inset: 0;
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.14);
 }
 
 .therapy-3d-card__pattern-overlay {
@@ -512,14 +523,14 @@
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .therapy-3d-card {
-    height: clamp(340px, 42vh, 420px);
+    height: clamp(300px, 34vh, 380px);
     padding: 1.25rem;
   }
 }
 
 @media (max-width: 768px) {
   .therapy-3d-card {
-    height: clamp(430px, 56vh, 470px);
+    height: clamp(450px, 58vh, 500px);
     padding: 1.35rem 1.25rem;
   }
 }
