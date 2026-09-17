@@ -11,7 +11,7 @@ let gateEase = 'power3.out';
 try {
   CustomEase.create('gateEase', '0.76, 0, 0.24, 1');
   gateEase = 'gateEase';
-} catch {
+} catch (_e) {
   gateEase = 'power3.out';
 }
 
@@ -160,27 +160,27 @@ export const KineticMobileMenu = ({
       duration: 0.62,
       ease: gateEase
     })
-    // Layer 2: Main Warm Cream panel slides in
-    .to(layer2, {
-      yPercent: 0,
-      duration: 0.70,
-      ease: gateEase
-    }, '-=0.52')
-    // Staggered links reveal through clipping mask
-    .to(links, {
-      yPercent: 0,
-      opacity: 1,
-      duration: 0.52,
-      stagger: 0.055,
-      ease: gateEase
-    }, '-=0.38')
-    // Footer coordinates reveal
-    .to(footer, {
-      opacity: 0.85,
-      y: 0,
-      duration: 0.4,
-      ease: 'power2.out'
-    }, '-=0.25');
+      // Layer 2: Main Warm Cream panel slides in
+      .to(layer2, {
+        yPercent: 0,
+        duration: 0.70,
+        ease: gateEase
+      }, '-=0.52')
+      // Staggered links reveal through clipping mask
+      .to(links, {
+        yPercent: 0,
+        opacity: 1,
+        duration: 0.52,
+        stagger: 0.055,
+        ease: gateEase
+      }, '-=0.38')
+      // Footer coordinates reveal
+      .to(footer, {
+        opacity: 0.85,
+        y: 0,
+        duration: 0.4,
+        ease: 'power2.out'
+      }, '-=0.25');
 
     // Start gentle idle ambient drift on shapes
     ambientTweensRef.current = shapes.map((shape, i) => {

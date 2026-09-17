@@ -7,30 +7,41 @@ import SectionTransition from './SectionTransition';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Global persistent image cache to eliminate redundant image reloads
+// Global persistent image cache & decoded tracking to eliminate redundant loads/decodes
 const globalImageCache = new Map();
+const decodedImageUrls = new Set();
 
-// Start preloading initial Home frames immediately at module evaluation time
-const earlyDesktopFrame = cinematicImages?.home?.desktop?.[0];
-const earlyMobileFrame = cinematicImages?.home?.mobile?.[0];
-if (earlyDesktopFrame) {
-  const earlyImgD = new Image();
-  earlyImgD.src = earlyDesktopFrame;
-  globalImageCache.set(earlyDesktopFrame, earlyImgD);
-}
-if (earlyMobileFrame) {
-  const earlyImgM = new Image();
-  earlyImgM.src = earlyMobileFrame;
-  globalImageCache.set(earlyMobileFrame, earlyImgM);
+function decodeImageAsync(img, url) {
+  if (!img || decodedImageUrls.has(url)) return Promise.resolve(img);
+  if ('decode' in img) {
+    return img.decode()
+      .then(() => {
+        decodedImageUrls.add(url);
+        return img;
+      })
+      .catch(() => {
+        decodedImageUrls.add(url);
+        return img;
+      });
+  }
+  decodedImageUrls.add(url);
+  return Promise.resolve(img);
 }
 
 function preloadImage(url) {
   if (!url) return Promise.resolve(null);
   if (globalImageCache.has(url)) {
     const existing = globalImageCache.get(url);
-    if (existing.complete) return Promise.resolve(existing);
+    if (existing.complete && existing.naturalWidth > 0) {
+      if (!decodedImageUrls.has(url)) {
+        return decodeImageAsync(existing, url);
+      }
+      return Promise.resolve(existing);
+    }
     return new Promise((resolve) => {
-      existing.addEventListener('load', () => resolve(existing), { once: true });
+      existing.addEventListener('load', () => {
+        decodeImageAsync(existing, url).then(resolve);
+      }, { once: true });
       existing.addEventListener('error', () => resolve(existing), { once: true });
     });
   }
@@ -38,7 +49,9 @@ function preloadImage(url) {
   return new Promise((resolve) => {
     const img = new Image();
     globalImageCache.set(url, img);
-    img.onload = () => resolve(img);
+    img.onload = () => {
+      decodeImageAsync(img, url).then(resolve);
+    };
     img.onerror = () => {
       console.warn(`[CinematicJourney] Failed to load image: ${url}`);
       resolve(img);
@@ -47,7 +60,17 @@ function preloadImage(url) {
   });
 }
 
-function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale = 1.0) {
+// Start preloading initial Home frames immediately at module evaluation time
+const earlyDesktopFrame = cinematicImages?.home?.desktop?.[0];
+const earlyMobileFrame = cinematicImages?.home?.mobile?.[0];
+if (earlyDesktopFrame) {
+  preloadImage(earlyDesktopFrame);
+}
+if (earlyMobileFrame) {
+  preloadImage(earlyMobileFrame);
+}
+
+function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale = 1.0, originX = 0.5, originY = 0.5) {
   if (!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return;
 
   // Unified centered cover fit derived strictly from canvas container dimensions
@@ -58,8 +81,8 @@ function drawSingleCover(ctx, img, canvasWidth, canvasHeight, alpha = 1.0, scale
   const renderWidth = baseWidth * scale;
   const renderHeight = baseHeight * scale;
 
-  const drawX = (canvasWidth - renderWidth) / 2;
-  const drawY = (canvasHeight - renderHeight) / 2;
+  const drawX = (canvasWidth - renderWidth) * originX;
+  const drawY = (canvasHeight - renderHeight) * originY;
 
   ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
   ctx.drawImage(img, drawX, drawY, renderWidth, renderHeight);
@@ -77,9 +100,6 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
 
   const baseImg = globalImageCache.get(activeFrames[baseIndex]);
   const nextImg = globalImageCache.get(activeFrames[nextIndex]);
-
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
 
   let cameraScale = 1.0;
   if (isHome) {
@@ -140,47 +160,6 @@ function drawInterpolatedFrames(ctx, activeFrames, virtualProgress, canvasWidth,
   ctx.globalAlpha = 1.0;
 }
 
-function renderHomeToAboutTransition(ctx, homeImgUrl, aboutImgUrl, progress, canvasWidth, canvasHeight) {
-  const homeImg = globalImageCache.get(homeImgUrl);
-  const aboutImg = globalImageCache.get(aboutImgUrl);
-
-  const p = Math.max(0, Math.min(1, progress));
-
-  // Home Frame 5 holds its exact final settled scale (1.060) and origin (0.535, 0.525)
-  const homeScale = 1.06;
-  const homeOriginX = 0.535;
-  const homeOriginY = 0.525;
-
-  // About 02 enters at its exact, intended natural starting scale (1.000) and origin (0.5, 0.5)
-  const aboutScale = 1.0;
-  const aboutOriginX = 0.5;
-  const aboutOriginY = 0.5;
-
-  // Smooth emergence matching the paper-bridge lighting curve
-  let aboutAlpha = 0;
-  if (p <= 0.08) {
-    aboutAlpha = 0;
-  } else if (p >= 0.78) {
-    aboutAlpha = 1.0;
-  } else {
-    const t = (p - 0.08) / 0.70;
-    aboutAlpha = t * t * (3 - 2 * t);
-  }
-
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-  // Always draw Home Frame 5 solid underneath as long as aboutAlpha < 1.0
-  if (aboutAlpha < 1.0 && homeImg && homeImg.complete) {
-    drawSingleCover(ctx, homeImg, canvasWidth, canvasHeight, 1.0, homeScale, homeOriginX, homeOriginY);
-  }
-
-  // Draw About 02 on top using the exact same canvas drawSingleCover engine
-  if (aboutAlpha > 0 && aboutImg && aboutImg.complete) {
-    drawSingleCover(ctx, aboutImg, canvasWidth, canvasHeight, aboutAlpha, aboutScale, aboutOriginX, aboutOriginY);
-  }
-
-  ctx.globalAlpha = 1.0;
-}
 
 export const CinematicJourney = ({ children }) => {
   const containerRef = useRef(null);
@@ -189,10 +168,10 @@ export const CinematicJourney = ({ children }) => {
   const overlaysContainerRef = useRef(null);
   const canvasDimsRef = useRef({ width: 0, height: 0 });
   const isMobileRef = useRef(false);
-  const lastRenderedKeyRef = useRef('');
+  const lastRenderedRef = useRef({ section: '', virtualProgress: -999, phaseProgress: -999 });
 
-  // Active state for transitions
-  const [transitionStates, setTransitionStates] = useState({
+  // Passive static states for transition wrappers
+  const [transitionStates] = useState({
     homeToAbout: { progress: 0, isActive: false },
     aboutToTherapy: { progress: 0, isActive: false },
     therapyToRecovery: { progress: 0, isActive: false },
@@ -229,34 +208,60 @@ export const CinematicJourney = ({ children }) => {
       return;
     }
 
+    // DPR cap: 1.5 for desktop, 1.25 for mobile/tablet to avoid GPU fill rate strain
     const updateCanvasSize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dprCap = isMobileRef.current ? 1.25 : 1.5;
+      const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
       const viewport = viewportRef.current;
       const width = viewport ? viewport.clientWidth : window.innerWidth;
       const height = viewport ? viewport.clientHeight : window.innerHeight;
 
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
+      const targetWidth = Math.round(width * dpr);
+      const targetHeight = Math.round(height * dpr);
 
-      canvasDimsRef.current = { width: canvas.width, height: canvas.height };
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        // Configure smoothing once during canvas resize
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'medium';
+
+        canvasDimsRef.current = { width: targetWidth, height: targetHeight };
+        lastRenderedRef.current.virtualProgress = -999; // force redraw on resize
+      }
     };
 
     updateCanvasSize();
 
-    // Preload sequence frames
+    // Sequence Frame Retrieval
     const getFrames = (sec) => {
       const secImgs = cinematicImages[sec];
       if (!secImgs) return [];
       return isMobileRef.current ? (secImgs.mobile || secImgs.desktop) : secImgs.desktop;
     };
 
-    // Preload initial frames of all sections
-    ['home', 'about', 'therapy', 'recovery'].forEach((sec) => {
-      const frames = getFrames(sec);
-      frames.forEach((url) => preloadImage(url));
-    });
+    const homeFrames = getFrames('home');
+    const aboutFrames = getFrames('about');
+    const therapyFrames = getFrames('therapy');
+    const recoveryFrames = getFrames('recovery');
+
+    // Prioritized Asynchronous Decoding:
+    // 1. Visible Home frames decoded immediately
+    homeFrames.forEach((url) => preloadImage(url));
+
+    // 2. Next section (About) preloaded shortly after initial render
+    const timerAbout = setTimeout(() => {
+      aboutFrames.forEach((url) => preloadImage(url));
+    }, 150);
+
+    // 3. Upcoming sequences (Therapy & Recovery) preloaded progressively
+    const timerUpcoming = setTimeout(() => {
+      therapyFrames.forEach((url) => preloadImage(url));
+      recoveryFrames.forEach((url) => preloadImage(url));
+    }, 400);
 
     // Section Entry Cross-Dissolve Helper
     const renderCrossDissolve = (outgoingUrl, incomingUrl, blendProgress, width, height) => {
@@ -267,49 +272,214 @@ export const CinematicJourney = ({ children }) => {
 
       ctx.clearRect(0, 0, width, height);
       if (outImg && outImg.complete) {
-        drawSingleCover(ctx, outImg, width, height, 1.0, 1.0, 0.5, 0.5);
+        drawSingleCover(ctx, outImg, width, height, 1.0, 1.0);
       }
       if (inImg && inImg.complete && alpha > 0) {
-        drawSingleCover(ctx, inImg, width, height, alpha, 1.0, 0.5, 0.5);
+        drawSingleCover(ctx, inImg, width, height, alpha, 1.0);
       }
       ctx.globalAlpha = 1.0;
     };
 
-    // Render helper
-    const renderFrame = (activeFrames, virtualProgress, section = 'home', force = false) => {
-      if (!activeFrames || !activeFrames.length) return;
-      const key = `${section}_${activeFrames[0]}_${virtualProgress.toFixed(3)}`;
-      if (!force && key === lastRenderedKeyRef.current) return;
-      lastRenderedKeyRef.current = key;
+    // Cache stable DOM references for overlays and child sections on mount
+    const cachedOverlays = [];
+    if (overlaysContainer) {
+      const overlayNodes = overlaysContainer.querySelectorAll('.cinematic-section-overlay');
+      overlayNodes.forEach((el) => {
+        const sec = el.getAttribute('data-section');
+        cachedOverlays.push({
+          el,
+          sec,
+          aboutEl: sec === 'about' ? el.querySelector('#about') : null,
+          therapyEl: sec === 'therapy' ? el.querySelector('#therapy') : null,
+          recoveryEl: sec === 'recovery' ? (el.querySelector('#recovery-for') || el.querySelector('#recovery')) : null,
+          lastOpacity: '',
+          lastVisibility: '',
+          lastPointerEvents: ''
+        });
+      });
+    }
 
+    const setOverlayStyle = (item, opStr, visStr, peStr) => {
+      if (item.lastOpacity !== opStr) {
+        item.el.style.opacity = opStr;
+        item.lastOpacity = opStr;
+      }
+      if (item.lastVisibility !== visStr) {
+        item.el.style.visibility = visStr;
+        item.lastVisibility = visStr;
+      }
+      if (item.lastPointerEvents !== peStr) {
+        item.el.style.pointerEvents = peStr;
+        item.lastPointerEvents = peStr;
+      }
+    };
+
+    // Single rAF-based render scheduling pipeline
+    let rafId = null;
+    const renderState = {
+      p: 0,
+      activePhase: JOURNEY_PHASES[0],
+      phaseProgress: 0,
+      frames: homeFrames,
+      virtualVal: 0,
+      section: 'home',
+      force: false
+    };
+
+    const executeRender = () => {
+      rafId = null;
+
+      const { p, activePhase, phaseProgress, frames, virtualVal, section, force } = renderState;
       const { width, height } = canvasDimsRef.current;
-      if (width > 0 && height > 0) {
-        const total = activeFrames.length;
-        const phaseProgress = total > 1 ? virtualProgress / (total - 1) : 0;
 
-        if (section === 'about' && phaseProgress < 0.20) {
-          const homeFrames = getFrames('home');
-          const outgoingUrl = homeFrames[homeFrames.length - 1];
-          const incomingUrl = activeFrames[0];
-          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
-        } else if (section === 'therapy' && phaseProgress < 0.20) {
-          const aboutFrames = getFrames('about');
-          const outgoingUrl = aboutFrames[aboutFrames.length - 1];
-          const incomingUrl = activeFrames[0];
-          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
-        } else if (section === 'recovery' && phaseProgress < 0.20) {
-          const therapyFrames = getFrames('therapy');
-          const outgoingUrl = therapyFrames[therapyFrames.length - 1];
-          const incomingUrl = activeFrames[0];
-          renderCrossDissolve(outgoingUrl, incomingUrl, phaseProgress / 0.20, width, height);
+      // 1. Canvas Redundancy Check
+      const last = lastRenderedRef.current;
+      const sectionChanged = last.section !== section;
+      const delta = Math.abs(virtualVal - last.virtualProgress);
+
+      // Render only if forced, section changed, or progress has moved by >= 0.0015
+      if (width > 0 && height > 0 && (force || sectionChanged || delta >= 0.0015)) {
+        last.section = section;
+        last.virtualProgress = virtualVal;
+        last.phaseProgress = phaseProgress;
+
+        const total = frames.length;
+        const normPhaseProgress = total > 1 ? virtualVal / (total - 1) : 0;
+
+        if (section === 'about' && normPhaseProgress < 0.20) {
+          const hFrames = getFrames('home');
+          const outgoingUrl = hFrames[hFrames.length - 1];
+          const incomingUrl = frames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, normPhaseProgress / 0.20, width, height);
+        } else if (section === 'therapy' && normPhaseProgress < 0.20) {
+          const aFrames = getFrames('about');
+          const outgoingUrl = aFrames[aFrames.length - 1];
+          const incomingUrl = frames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, normPhaseProgress / 0.20, width, height);
+        } else if (section === 'recovery' && normPhaseProgress < 0.20) {
+          const tFrames = getFrames('therapy');
+          const outgoingUrl = tFrames[tFrames.length - 1];
+          const incomingUrl = frames[0];
+          renderCrossDissolve(outgoingUrl, incomingUrl, normPhaseProgress / 0.20, width, height);
         } else {
-          drawInterpolatedFrames(ctx, activeFrames, virtualProgress, width, height, section === 'home');
+          drawInterpolatedFrames(ctx, frames, virtualVal, width, height, section === 'home');
         }
+      }
+
+      // 2. Synchronize Section Overlays (using cached references)
+      cachedOverlays.forEach((item) => {
+        const sec = item.sec;
+        if (sec === activePhase.section) {
+          const isPersistentOverlay = sec === 'about' || sec === 'therapy' || sec === 'recovery';
+          let fadeOut = 1.0;
+          if (!isPersistentOverlay) {
+            fadeOut = phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0;
+          } else if (sec === 'about' && phaseProgress >= 0.85) {
+            fadeOut = phaseProgress >= 0.96 ? 0.0 : Math.max(0, 1.0 - (phaseProgress - 0.85) / (0.96 - 0.85));
+          }
+
+          const fadeIn = (sec === 'home' || isPersistentOverlay || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
+          const op = Math.max(0, Math.min(1, Math.min(fadeIn, fadeOut)));
+          const opStr = op.toFixed(2);
+          const visStr = op > 0 ? 'visible' : 'hidden';
+          const peStr = op > 0.5 ? 'auto' : 'none';
+          setOverlayStyle(item, opStr, visStr, peStr);
+
+          const secFrames = getFrames(sec);
+          const secVirtualVal = phaseProgress * Math.max(1, secFrames.length - 1);
+          const secPrevFrame = Math.floor(secVirtualVal);
+          const secCurrFrame = Math.min(secPrevFrame + 1, secFrames.length - 1);
+
+          if (sec === 'about' && typeof item.aboutEl?.updateAboutProgress === 'function') {
+            item.aboutEl.updateAboutProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+          } else if (sec === 'therapy' && typeof item.therapyEl?.updateTherapyProgress === 'function') {
+            item.therapyEl.updateTherapyProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+          } else if (sec === 'recovery' && typeof item.recoveryEl?.updateRecoveryProgress === 'function') {
+            item.recoveryEl.updateRecoveryProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
+          }
+        } else {
+          const previousFrame = Math.floor(virtualVal);
+          const currentFrame = Math.min(previousFrame + 1, frames.length - 1);
+          const isPhoto5Starting = (previousFrame === 3 && currentFrame === 4) || virtualVal >= 3.0;
+
+          if (sec === 'about' && activePhase.section === 'home' && isPhoto5Starting) {
+            const progressInPhoto5 = Math.max(0, Math.min(1, (virtualVal - 3.0) / 0.35));
+            const loaderFadeIn = progressInPhoto5 * progressInPhoto5 * (3 - 2 * progressInPhoto5);
+            const op = Math.max(0.05, loaderFadeIn);
+            setOverlayStyle(item, op.toFixed(2), 'visible', 'auto');
+
+            if (typeof item.aboutEl?.updateAboutProgress === 'function') {
+              item.aboutEl.updateAboutProgress(0);
+            }
+          } else if (sec === 'therapy' && activePhase.section === 'about' && phaseProgress >= 0.88) {
+            const therapyEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.88) / 0.12));
+            const smoothAlpha = therapyEmergence * therapyEmergence * (3 - 2 * therapyEmergence);
+            const opStr = smoothAlpha.toFixed(2);
+            setOverlayStyle(item, opStr, smoothAlpha > 0 ? 'visible' : 'hidden', 'none');
+
+            if (typeof item.therapyEl?.updateTherapyProgress === 'function') {
+              item.therapyEl.updateTherapyProgress(0);
+            }
+          } else if (sec === 'recovery' && activePhase.section === 'therapy' && phaseProgress >= 0.90) {
+            const recoveryEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.90) / 0.10));
+            const smoothAlpha = recoveryEmergence * recoveryEmergence * (3 - 2 * recoveryEmergence);
+            setOverlayStyle(item, smoothAlpha.toFixed(2), 'visible', 'none');
+
+            if (typeof item.recoveryEl?.updateRecoveryProgress === 'function') {
+              item.recoveryEl.updateRecoveryProgress(0, 0, 0, 0);
+            }
+          } else if (sec === 'therapy' && activePhase.section === 'recovery' && phaseProgress < 0.10) {
+            const therapyExitAlpha = Math.max(0, 1 - phaseProgress / 0.10);
+            const opStr = (therapyExitAlpha * 0.4).toFixed(2);
+            setOverlayStyle(item, opStr, therapyExitAlpha > 0 ? 'visible' : 'hidden', 'none');
+          } else {
+            setOverlayStyle(item, '0', 'hidden', 'none');
+
+            if (sec === 'about' && typeof item.aboutEl?.updateAboutProgress === 'function') {
+              const isPast = p > activePhase.end;
+              item.aboutEl.updateAboutProgress(isPast ? 1 : 0);
+            } else if (sec === 'therapy' && typeof item.therapyEl?.updateTherapyProgress === 'function') {
+              const isPast = p > activePhase.end;
+              item.therapyEl.updateTherapyProgress(isPast ? 1 : -1);
+            } else if (sec === 'recovery' && typeof item.recoveryEl?.updateRecoveryProgress === 'function') {
+              const isPast = p > activePhase.end;
+              item.recoveryEl.updateRecoveryProgress(isPast ? 1 : -1);
+            }
+          }
+        }
+      });
+    };
+
+    const scheduleRender = (p, force = false) => {
+      let activePhase = JOURNEY_PHASES[0];
+      for (let i = 0; i < JOURNEY_PHASES.length; i++) {
+        const phase = JOURNEY_PHASES[i];
+        if (p >= phase.start && p <= phase.end) {
+          activePhase = phase;
+          break;
+        } else if (p > phase.end && i === JOURNEY_PHASES.length - 1) {
+          activePhase = phase;
+        }
+      }
+
+      const phaseProgress = (p - activePhase.start) / activePhase.duration;
+      const frames = getFrames(activePhase.section);
+      const virtualVal = phaseProgress * (frames.length - 1);
+
+      renderState.p = p;
+      renderState.activePhase = activePhase;
+      renderState.phaseProgress = phaseProgress;
+      renderState.frames = frames;
+      renderState.virtualVal = virtualVal;
+      renderState.section = activePhase.section;
+      renderState.force = force;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(executeRender);
       }
     };
 
     // Draw initial Home Frame 0 immediately on mount
-    const homeFrames = getFrames('home');
     const initImg = globalImageCache.get(homeFrames[0]) || new Image();
     if (!globalImageCache.has(homeFrames[0])) {
       initImg.src = homeFrames[0];
@@ -341,176 +511,14 @@ export const CinematicJourney = ({ children }) => {
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
-        scrub: 0.5,
-        fastScrollEnd: true,
+        scrub: 0.8,
         onUpdate: (self) => {
-          const p = self.progress; // 0.0 -> 1.0
-
-          // Determine active phase
-          let activePhase = JOURNEY_PHASES[0];
-          for (let i = 0; i < JOURNEY_PHASES.length; i++) {
-            const phase = JOURNEY_PHASES[i];
-            if (p >= phase.start && p <= phase.end) {
-              activePhase = phase;
-              break;
-            } else if (p > phase.end && i === JOURNEY_PHASES.length - 1) {
-              activePhase = phase;
-            }
-          }
-
-          // 1. Handle Sequence Rendering
-          if (activePhase.type === 'sequence') {
-            const phaseProgress = (p - activePhase.start) / activePhase.duration;
-            const frames = getFrames(activePhase.section);
-            const virtualVal = phaseProgress * (frames.length - 1);
-            renderFrame(frames, virtualVal, activePhase.section);
-
-            // Deactivate all transition layers
-            setTransitionStates((prev) => {
-              let changed = false;
-              const next = { ...prev };
-              Object.keys(next).forEach((k) => {
-                if (next[k].isActive) {
-                  next[k] = { progress: 0, isActive: false };
-                  changed = true;
-                }
-              });
-              return changed ? next : prev;
-            });
-
-            // Update overlay opacities and synchronize About UI
-            if (overlaysContainer) {
-              const overlayEls = overlaysContainer.querySelectorAll('.cinematic-section-overlay');
-              overlayEls.forEach((el) => {
-                const sec = el.getAttribute('data-section');
-                if (sec === activePhase.section) {
-                  // Fade out overlay near end of section sequence (last 18%) - except About, Therapy, Recovery which remain visible until transition
-                  const isPersistentOverlay = sec === 'about' || sec === 'therapy' || sec === 'recovery';
-                  let fadeOut = 1.0;
-                  if (!isPersistentOverlay) {
-                    fadeOut = phaseProgress > 0.82 ? (1 - phaseProgress) / 0.18 : 1.0;
-                  } else if (sec === 'about' && phaseProgress >= 0.85) {
-                    // Continuous cinematic cross-fade: About content smoothly fades out
-                    fadeOut = phaseProgress >= 0.96 ? 0.0 : Math.max(0, 1.0 - (phaseProgress - 0.85) / (0.96 - 0.85));
-                  }
-                  // Fade in overlay at start of section sequence
-                  // Home, About, Therapy, Recovery overlays are visible from initial section entry
-                  const fadeIn = (sec === 'home' || isPersistentOverlay || phaseProgress >= 0.15) ? 1.0 : phaseProgress / 0.15;
-                  const op = Math.max(0, Math.min(1, Math.min(fadeIn, fadeOut)));
-                  el.style.opacity = op.toFixed(2);
-                  el.style.visibility = op > 0 ? 'visible' : 'hidden';
-                  el.style.pointerEvents = op > 0.5 ? 'auto' : 'none';
-
-                  // Directly drive Section UI progress from master journey progress & frame indices
-                  const secFrames = getFrames(sec);
-                  const secVirtualVal = phaseProgress * Math.max(1, secFrames.length - 1);
-                  const secPrevFrame = Math.floor(secVirtualVal);
-                  const secCurrFrame = Math.min(secPrevFrame + 1, secFrames.length - 1);
-
-                  if (sec === 'about') {
-                    const aboutEl = el.querySelector('#about');
-                    if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                      aboutEl.updateAboutProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
-                    }
-                  } else if (sec === 'therapy') {
-                    const therapyEl = el.querySelector('#therapy');
-                    if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
-                      therapyEl.updateTherapyProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
-                    }
-                  } else if (sec === 'recovery') {
-                    const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
-                    if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
-                      recoveryEl.updateRecoveryProgress(phaseProgress, secVirtualVal, secPrevFrame, secCurrFrame);
-                    }
-                  }
-                } else {
-                  // Home Photo 4 -> Photo 5 transition trigger:
-                  // Photo 4 (index 3) finishes completely at virtualVal = 3.0.
-                  // Photo 5 (index 4) STARTS IMMEDIATELY at virtualVal >= 3.0 (previousFrame === 3 && currentFrame === 4).
-                  // AT THE EXACT MOMENT PHOTO 5 STARTS: Start the About Loader with a smooth fade-in over Photo 5.
-                  const previousFrame = Math.floor(virtualVal);
-                  const currentFrame = Math.min(previousFrame + 1, frames.length - 1);
-                  const isPhoto5Starting = (previousFrame === 3 && currentFrame === 4) || virtualVal >= 3.0;
-
-                  if (sec === 'about' && activePhase.section === 'home' && isPhoto5Starting) {
-                    const progressInPhoto5 = Math.max(0, Math.min(1, (virtualVal - 3.0) / 0.35));
-                    const loaderFadeIn = progressInPhoto5 * progressInPhoto5 * (3 - 2 * progressInPhoto5); // smooth cubic fade-in
-                    const op = Math.max(0.05, loaderFadeIn);
-                    el.style.opacity = op.toFixed(2);
-                    el.style.visibility = 'visible';
-                    el.style.pointerEvents = 'auto';
-
-                    const aboutEl = el.querySelector('#about');
-                    if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                      aboutEl.updateAboutProgress(0);
-                    }
-                  } else if (sec === 'therapy' && activePhase.section === 'about' && phaseProgress >= 0.88) {
-                    // Continuous cinematic cross-fade: Therapy Chapter 02 loader emerges
-                    // simultaneously as About content completes its fade-out (no empty gap)
-                    const therapyEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.88) / 0.12));
-                    const smoothAlpha = therapyEmergence * therapyEmergence * (3 - 2 * therapyEmergence);
-                    el.style.opacity = smoothAlpha.toFixed(2);
-                    el.style.visibility = smoothAlpha > 0 ? 'visible' : 'hidden';
-                    el.style.pointerEvents = 'none';
-
-                    const therapyEl = el.querySelector('#therapy');
-                    if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
-                      therapyEl.updateTherapyProgress(0);
-                    }
-                  } else if (sec === 'recovery' && activePhase.section === 'therapy' && phaseProgress >= 0.90) {
-                    // Therapy -> Recovery smooth transition handoff (0.90 -> 1.00)
-                    // Card 06 has completed and settled; gently emerge Recovery Chapter 03 loader
-                    const recoveryEmergence = Math.max(0, Math.min(1, (phaseProgress - 0.90) / 0.10));
-                    const smoothAlpha = recoveryEmergence * recoveryEmergence * (3 - 2 * recoveryEmergence);
-                    el.style.opacity = smoothAlpha.toFixed(2);
-                    el.style.visibility = 'visible';
-                    el.style.pointerEvents = 'none';
-
-                    const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
-                    if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
-                      recoveryEl.updateRecoveryProgress(0, 0, 0, 0);
-                    }
-                  } else if (sec === 'therapy' && activePhase.section === 'recovery' && phaseProgress < 0.10) {
-                    // Subtle reverse-scroll persistence for Therapy as Recovery exits
-                    const therapyExitAlpha = Math.max(0, 1 - phaseProgress / 0.10);
-                    el.style.opacity = (therapyExitAlpha * 0.4).toFixed(2);
-                    el.style.visibility = therapyExitAlpha > 0 ? 'visible' : 'hidden';
-                    el.style.pointerEvents = 'none';
-                  } else {
-                    el.style.opacity = '0';
-                    el.style.visibility = 'hidden';
-                    el.style.pointerEvents = 'none';
-
-                    if (sec === 'about') {
-                      const aboutEl = el.querySelector('#about');
-                      if (aboutEl && typeof aboutEl.updateAboutProgress === 'function') {
-                        const isPast = p > activePhase.end;
-                        aboutEl.updateAboutProgress(isPast ? 1 : 0);
-                      }
-                    } else if (sec === 'therapy') {
-                      const therapyEl = el.querySelector('#therapy');
-                      if (therapyEl && typeof therapyEl.updateTherapyProgress === 'function') {
-                        const isPast = p > activePhase.end;
-                        therapyEl.updateTherapyProgress(isPast ? 1 : -1);
-                      }
-                    } else if (sec === 'recovery') {
-                      const recoveryEl = el.querySelector('#recovery-for') || el.querySelector('#recovery');
-                      if (recoveryEl && typeof recoveryEl.updateRecoveryProgress === 'function') {
-                        const isPast = p > activePhase.end;
-                        recoveryEl.updateRecoveryProgress(isPast ? 1 : -1);
-                      }
-                    }
-                  }
-                }
-              });
-            }
-          }
-
+          scheduleRender(self.progress);
         }
       });
 
       // Render Frame 0 immediately on initialization & refresh ScrollTrigger
-      renderFrame(homeFrames, 0, 'home', true);
+      scheduleRender(0, true);
       ScrollTrigger.refresh();
 
       // Anchor links smooth navigation listener
@@ -557,6 +565,10 @@ export const CinematicJourney = ({ children }) => {
       document.addEventListener('click', handleAnchorClick);
 
       return () => {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
         document.removeEventListener('click', handleAnchorClick);
       };
     }, container);
@@ -581,7 +593,13 @@ export const CinematicJourney = ({ children }) => {
     window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
+      clearTimeout(timerAbout);
+      clearTimeout(timerUpcoming);
       clearTimeout(resizeTimer);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
       mql.removeEventListener('change', handleBreakpointChange);
       window.removeEventListener('resize', handleResize);
       gsapContext.revert();
