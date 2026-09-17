@@ -94,15 +94,15 @@ export const therapyData = [
     ]
   },
   {
-    id: 'ice-bath-therapy',
+    id: 'ice-cupping-therapy',
     number: '03',
     category: 'THERAPY 03',
-    title: 'Ice Bath Therapy',
+    title: 'Ice Cupping Therapy',
     tagline: 'Refresh Your Body. Reset Your Mind. Support Your Recovery.',
     image: cardIceBath,
     iconName: 'Snowflake',
-    introduction: 'Ice Bath Therapy uses controlled cold-water exposure as part of a wellness and recovery routine. It has become popular among active individuals and people interested in post-activity recovery experiences.',
-    whatIsThis: 'The experience involves spending a controlled amount of time in cold water under appropriate guidance. Because cold exposure can affect the body significantly, preparation, individual tolerance, and professional supervision are important.',
+    introduction: 'Ice Cupping Therapy combines controlled cold application with cupping techniques as part of a wellness and recovery routine. It has become popular among active individuals and people interested in post-activity recovery experiences.',
+    whatIsThis: 'The experience involves applying cold therapy in combination with cupping techniques on selected areas under appropriate guidance. Because temperature and suction can affect the body, preparation, individual tolerance, and professional supervision are important.',
     benefits: [
       'Provides an intense refreshing experience',
       'Popular as part of post-activity recovery routines',
@@ -110,7 +110,7 @@ export const therapyData = [
       'Can create a strong sense of mental refreshment',
       'Encourages disciplined breathing and controlled exposure'
     ],
-    whoMayChoose: 'Ice Bath Therapy may be of interest to athletes, fitness enthusiasts, and active individuals. It is not automatically suitable for everyone, and individual health considerations should be discussed before participation.',
+    whoMayChoose: 'Ice Cupping Therapy may be of interest to athletes, fitness enthusiasts, and active individuals. It is not automatically suitable for everyone, and individual health considerations should be discussed before participation.',
     whatToExpect: 'Before beginning, the process and comfort expectations should be explained. The session focuses on controlled exposure and monitoring individual tolerance. Clients should never feel pressured to continue beyond a safe limit.',
     whyChoose: [
       'Guidance-focused approach',
@@ -120,8 +120,8 @@ export const therapyData = [
     ],
     faqs: [
       {
-        q: 'Is an ice bath suitable for everyone?',
-        a: 'No. Certain health conditions may make cold exposure unsuitable, so professional guidance is necessary.'
+        q: 'Is ice cupping therapy suitable for everyone?',
+        a: 'No. Certain health conditions may make cold exposure or cupping unsuitable, so professional guidance is necessary.'
       },
       {
         q: 'How long is the session?',

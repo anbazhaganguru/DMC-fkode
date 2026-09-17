@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import KineticMobileMenu, { KineticMenuToggle } from './KineticMobileMenu';
 
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -9,7 +10,8 @@ export const Navbar = () => {
       const scrollY = window.scrollY;
       const journeyEl = document.getElementById('cinematic-journey');
       if (journeyEl) {
-        const rect = journeyEl.getBoundingClientRect();
+        const targetEl = journeyEl.closest('.pin-spacer') || journeyEl;
+        const rect = targetEl.getBoundingClientRect();
         const totalHeight = rect.height - window.innerHeight;
         if (totalHeight > 0 && rect.top <= 0 && rect.bottom > window.innerHeight / 2) {
           const progress = -rect.top / totalHeight;
@@ -17,7 +19,7 @@ export const Navbar = () => {
           else if (progress < 0.50) setActiveSection('about');
           else if (progress < 0.75) setActiveSection('therapy');
           else setActiveSection('recovery-for');
-        } else if (rect.bottom <= window.innerHeight / 2 || scrollY > 3000) {
+        } else if (rect.bottom <= window.innerHeight / 2) {
           setActiveSection('cta');
         } else if (scrollY < 100) {
           setActiveSection('home');
@@ -138,61 +140,20 @@ export const Navbar = () => {
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
           </a>
-          <button
-            type="button"
-            className={`navbar-menu-toggle ${mobileMenuOpen ? 'navbar-menu-toggle--open' : ''}`}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
-            aria-expanded={mobileMenuOpen}
-          >
-            <span className="navbar-menu-bar" />
-            <span className="navbar-menu-bar" />
-          </button>
+          <KineticMenuToggle
+            isOpen={mobileMenuOpen}
+            onToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+          />
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="navbar-mobile-drawer">
-          <nav className="navbar-mobile-nav" aria-label="Mobile Navigation">
-            <a
-              href="#home"
-              className={`mobile-nav-link ${activeSection === 'home' ? 'mobile-nav-link--active' : ''}`}
-              onClick={() => handleLinkClick('home')}
-            >
-              HOME
-            </a>
-            <a
-              href="#about"
-              className={`mobile-nav-link ${activeSection === 'about' ? 'mobile-nav-link--active' : ''}`}
-              onClick={() => handleLinkClick('about')}
-            >
-              ABOUT
-            </a>
-            <a
-              href="#therapy"
-              className={`mobile-nav-link ${activeSection === 'therapy' ? 'mobile-nav-link--active' : ''}`}
-              onClick={() => handleLinkClick('therapy')}
-            >
-              THERAPY
-            </a>
-            <a
-              href="#recovery-for"
-              className={`mobile-nav-link ${activeSection === 'recovery-for' ? 'mobile-nav-link--active' : ''}`}
-              onClick={() => handleLinkClick('recovery-for')}
-            >
-              RECOVERY FOR
-            </a>
-            <a
-              href="#cta"
-              className={`mobile-nav-link ${activeSection === 'cta' ? 'mobile-nav-link--active' : ''}`}
-              onClick={() => handleLinkClick('cta')}
-            >
-              CONTACT
-            </a>
-          </nav>
-        </div>
-      )}
+      {/* Full-Screen Kinetic Mobile/Tablet Navigation Menu */}
+      <KineticMobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        activeSection={activeSection}
+        onNavigate={(sectionId) => handleLinkClick(sectionId)}
+      />
     </header>
   );
 };

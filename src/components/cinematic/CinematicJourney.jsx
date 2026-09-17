@@ -529,8 +529,14 @@ export const CinematicJourney = ({ children }) => {
 
         if (targetId === 'cta') {
           e.preventDefault();
-          const targetScroll = mainTrigger.end + 50;
-          window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+          const ctaEl = document.getElementById('cta');
+          if (ctaEl) {
+            const ctaTop = ctaEl.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: ctaTop, behavior: 'smooth' });
+          } else {
+            const targetScroll = mainTrigger.end + window.innerHeight;
+            window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+          }
           return;
         }
 

@@ -1,0 +1,500 @@
+/* ==========================================================================
+   Kinetic Mobile / Tablet Menu (Sterling Gate Reference)
+   Tailored exclusively for Daniel Wellness Center (DWC)
+   Palette: Warm Cream, Soft Ivory, Deep Forest, Sage, Sky Blue, Mint, Lilac
+   Active Breakpoint: <= 1024px
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Kinetic Navbar Menu Toggle Button
+   -------------------------------------------------------------------------- */
+.kinetic-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px 0 14px;
+  background: rgba(253, 252, 250, 0.90);
+  border: 1px solid rgba(30, 37, 34, 0.15);
+  border-radius: 9999px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 210;
+}
+
+.kinetic-menu-toggle:hover {
+  background: rgba(250, 247, 242, 0.98);
+  border-color: rgba(30, 37, 34, 0.25);
+  box-shadow: 0 4px 14px rgba(30, 37, 34, 0.08);
+}
+
+.kinetic-menu-toggle--open {
+  background: rgba(250, 247, 242, 0.98);
+  border-color: rgba(122, 175, 162, 0.4);
+}
+
+/* Kinetic Vertical Sliding Text (MENU <-> CLOSE) */
+.kinetic-toggle-text-wrap {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  height: 14px;
+  line-height: 14px;
+  width: 44px;
+  text-align: right;
+}
+
+.kinetic-toggle-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  color: var(--color-dwc-dark, #1E2522);
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.kinetic-toggle-label--menu {
+  transform: translateY(0%);
+  opacity: 1;
+}
+
+.kinetic-menu-toggle--open .kinetic-toggle-label--menu {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.kinetic-toggle-label--close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  opacity: 0;
+  color: var(--color-dwc-dark, #1E2522);
+}
+
+.kinetic-menu-toggle--open .kinetic-toggle-label--close {
+  transform: translateY(0%);
+  opacity: 1;
+}
+
+/* Rotating Kinetic Icon */
+.kinetic-toggle-icon {
+  position: relative;
+  width: 16px;
+  height: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.kinetic-toggle-bar {
+  width: 15px;
+  height: 1.5px;
+  background-color: var(--color-dwc-dark, #1E2522);
+  border-radius: 9999px;
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1), width 0.3s ease;
+  transform-origin: center;
+}
+
+.kinetic-menu-toggle--open .kinetic-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.kinetic-menu-toggle--open .kinetic-toggle-bar:first-child {
+  transform: translateY(5.75px) rotate(45deg);
+}
+
+.kinetic-menu-toggle--open .kinetic-toggle-bar:last-child {
+  transform: translateY(-5.75px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   2. Full-Screen Menu Overlay Container
+   -------------------------------------------------------------------------- */
+.kinetic-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 200;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.kinetic-overlay--visible {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. Layered Backdrop Panels (Sterling Gate Double Curtain Reveal)
+   -------------------------------------------------------------------------- */
+/* Layer 1: Subtle Tint / Accent Curtain */
+.kinetic-layer-accent {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(122, 175, 162, 0.28) 0%,
+    rgba(138, 180, 205, 0.22) 50%,
+    rgba(226, 206, 203, 0.25) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  will-change: transform;
+  z-index: 1;
+}
+
+/* Layer 2: Primary Luxury Panel (Warm Cream / Soft Ivory Sanctuary) */
+.kinetic-layer-primary {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(253, 252, 250, 0.98);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-bottom: 1px solid rgba(30, 37, 34, 0.08);
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  z-index: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   4. Background Ambient Shapes (Kinetic Pastel Floating Shapes)
+   -------------------------------------------------------------------------- */
+.kinetic-ambient-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.kinetic-ambient-shape {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.20;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Shape 0 - Sage / Natural Restorative (Home) */
+.kinetic-ambient-shape--0 {
+  width: 380px;
+  height: 380px;
+  top: 5%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(122, 175, 162, 0.40) 0%, rgba(122, 175, 162, 0) 70%);
+}
+
+/* Shape 1 - Sky Blue / Calm Window Light (About) */
+.kinetic-ambient-shape--1 {
+  width: 440px;
+  height: 440px;
+  top: 22%;
+  right: -12%;
+  background: radial-gradient(circle, rgba(138, 180, 205, 0.38) 0%, rgba(138, 180, 205, 0) 70%);
+}
+
+/* Shape 2 - Fresh Mint / Precision Lab (Therapy) */
+.kinetic-ambient-shape--2 {
+  width: 360px;
+  height: 360px;
+  top: 42%;
+  left: 6%;
+  background: radial-gradient(circle, rgba(56, 163, 165, 0.32) 0%, rgba(56, 163, 165, 0) 70%);
+}
+
+/* Shape 3 - Soft Lilac / Restoration (Recovery For) */
+.kinetic-ambient-shape--3 {
+  width: 420px;
+  height: 420px;
+  top: 58%;
+  right: -4%;
+  background: radial-gradient(circle, rgba(205, 190, 220, 0.34) 0%, rgba(205, 190, 220, 0) 70%);
+}
+
+/* Shape 4 - Warm Ivory / Rose Glow (Book Appointment) */
+.kinetic-ambient-shape--4 {
+  width: 460px;
+  height: 460px;
+  bottom: -6%;
+  left: 12%;
+  background: radial-gradient(circle, rgba(226, 206, 203, 0.40) 0%, rgba(226, 206, 203, 0) 70%);
+}
+
+/* --------------------------------------------------------------------------
+   5. Content Wrapper & Header
+   -------------------------------------------------------------------------- */
+.kinetic-content-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Top Navigation Bar inside Menu */
+.kinetic-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px clamp(16px, 5vw, 36px) 10px clamp(16px, 5vw, 36px);
+  border-bottom: 1px solid rgba(30, 37, 34, 0.06);
+}
+
+.kinetic-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.kinetic-brand-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background-color: var(--color-dwc-dark, #1E2522);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kinetic-brand-badge-letter {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: var(--color-dwc-cream, #FDFCFA);
+  font-weight: 500;
+}
+
+.kinetic-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.kinetic-brand-title {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--color-dwc-dark, #1E2522);
+  line-height: 1.2;
+}
+
+.kinetic-brand-subtitle {
+  font-family: var(--font-sans);
+  font-size: 7.5px;
+  letter-spacing: 1.6px;
+  font-weight: 500;
+  color: var(--color-dwc-muted, #55605A);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   6. Navigation Links List (Staggered Kinetic Entrance)
+   -------------------------------------------------------------------------- */
+.kinetic-nav-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 4vh, 48px) clamp(20px, 6vw, 64px);
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.kinetic-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.8vh, 18px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual Masked Item for Kinetic Reveal */
+.kinetic-nav-mask {
+  overflow: hidden;
+  display: block;
+}
+
+.kinetic-nav-link {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(12px, 2.5vw, 24px);
+  text-decoration: none;
+  padding: clamp(6px, 1.2vh, 12px) 0;
+  color: var(--color-dwc-dark, #1E2522);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kinetic-nav-link:hover,
+.kinetic-nav-link:focus-visible {
+  transform: translateX(10px);
+}
+
+/* Index Number */
+.kinetic-link-num {
+  font-family: var(--font-sans);
+  font-size: clamp(11px, 2vw, 13px);
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--color-dwc-sage, #7AAFA2);
+  transition: color 0.3s ease;
+  min-width: 24px;
+}
+
+.kinetic-nav-link:hover .kinetic-link-num {
+  color: var(--color-dwc-dark, #1E2522);
+}
+
+/* Main Typography (Cormorant Garamond Serif) */
+.kinetic-link-label {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 5.2vw, 48px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  color: var(--color-dwc-dark, #1E2522);
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.kinetic-nav-link:hover .kinetic-link-label {
+  color: var(--color-dwc-sage, #7AAFA2);
+}
+
+/* Active State indicator */
+.kinetic-nav-link--active .kinetic-link-label {
+  color: var(--color-dwc-sage, #7AAFA2);
+  font-weight: 600;
+}
+
+.kinetic-link-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--color-dwc-sage, #7AAFA2);
+  margin-left: 12px;
+  vertical-align: middle;
+  box-shadow: 0 0 10px rgba(122, 175, 162, 0.6);
+}
+
+/* Subtle Link Accent Arrow on Hover (Appears gracefully) */
+.kinetic-link-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  color: var(--color-dwc-sage, #7AAFA2);
+}
+
+.kinetic-nav-link:hover .kinetic-link-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* --------------------------------------------------------------------------
+   7. Menu Footer Metadata & DWC Coordinates
+   -------------------------------------------------------------------------- */
+.kinetic-footer {
+  width: 100%;
+  padding: clamp(16px, 3vh, 28px) clamp(20px, 6vw, 64px);
+  border-top: 1px solid rgba(30, 37, 34, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.kinetic-footer-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.kinetic-footer-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-dwc-muted, #55605A);
+  margin-bottom: 2px;
+}
+
+.kinetic-footer-value {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-dwc-dark, #1E2522);
+  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+
+.kinetic-footer-value--link:hover {
+  color: var(--color-dwc-sage, #7AAFA2);
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive Behavior & Breakpoints
+   -------------------------------------------------------------------------- */
+/* Hide completely on Desktop devices (> 1024px) */
+@media (min-width: 1025px) {
+  .kinetic-menu-toggle {
+    display: none !important;
+  }
+  .kinetic-overlay {
+    display: none !important;
+  }
+}
+
+/* Mobile Small Heights & Landscape Support */
+@media (max-height: 680px) {
+  .kinetic-nav-container {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .kinetic-nav-list {
+    gap: 4px;
+  }
+  .kinetic-nav-link {
+    padding: 4px 0;
+  }
+  .kinetic-link-label {
+    font-size: clamp(22px, 4.5vh, 28px);
+  }
+  .kinetic-footer {
+    padding: 10px clamp(16px, 5vw, 36px);
+  }
+}
